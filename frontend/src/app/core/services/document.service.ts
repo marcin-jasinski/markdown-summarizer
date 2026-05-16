@@ -32,4 +32,8 @@ export class DocumentService {
       req,
     );
   }
+
+  delete(kbId: string, documentId: string): Observable<void> {
+    return this.api.delete<void>(`/api/knowledge-bases/${kbId}/documents/${documentId}`);
+  }
 }

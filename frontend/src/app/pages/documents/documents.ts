@@ -1,22 +1,17 @@
 import {
   Component,
+  ElementRef,
   OnInit,
   OnDestroy,
   ChangeDetectionStrategy,
   inject,
   signal,
+  ViewChild,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { MfSnackbarService } from '../../core/services/mf-snackbar.service';
 import { DocumentService } from '../../core/services/document.service';
 import { EventService } from '../../core/services/event.service';
 import type { DocumentResponse } from '../../core/models/api.models';
@@ -25,26 +20,23 @@ import type { DocumentResponse } from '../../core/models/api.models';
   selector: 'app-documents',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatCardModule, MatTableModule, MatButtonModule, MatIconModule,
-    MatProgressBarModule, MatChipsModule, MatTooltipModule, DatePipe,
-  ],
+  imports: [DatePipe],
   templateUrl: './documents.html',
   styleUrl: './documents.scss',
 })
 export class DocumentsComponent implements OnInit, OnDestroy {
+  @ViewChild('fileInput') private fileInput?: ElementRef<HTMLInputElement>;
+
   private readonly route = inject(ActivatedRoute);
   private readonly docService = inject(DocumentService);
   private readonly eventService = inject(EventService);
-  private readonly snack = inject(MatSnackBar);
+  private readonly snackbarService = inject(MfSnackbarService);
 
   readonly kbId = signal('');
   readonly documents = signal<DocumentResponse[]>([]);
-  readonly loading = signal(true);
+  readonly isLoading = signal(true);
   readonly uploading = signal(false);
-  readonly dragOver = signal(false);
-
-  readonly displayedColumns = ['title', 'status', 'mime_type', 'created_at', 'actions'];
+  readonly isDragOver = signal(false);
 
   private eventSub?: Subscription;
 
@@ -60,10 +52,10 @@ export class DocumentsComponent implements OnInit, OnDestroy {
   }
 
   loadDocuments() {
-    this.loading.set(true);
+    this.isLoading.set(true);
     this.docService.list(this.kbId()).subscribe({
-      next: docs => { this.documents.set(docs); this.loading.set(false); },
-      error: () => this.loading.set(false),
+      next: docs => { this.documents.set(docs); this.isLoading.set(false); },
+      error: () => this.isLoading.set(false),
     });
   }
 
@@ -77,16 +69,16 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
-    this.dragOver.set(true);
+    this.isDragOver.set(true);
   }
 
   onDragLeave() {
-    this.dragOver.set(false);
+    this.isDragOver.set(false);
   }
 
   onDrop(event: DragEvent) {
     event.preventDefault();
-    this.dragOver.set(false);
+    this.isDragOver.set(false);
     const files = event.dataTransfer?.files;
     if (files?.length) {
       this.uploadFiles(Array.from(files));
@@ -101,13 +93,25 @@ export class DocumentsComponent implements OnInit, OnDestroy {
     }
   }
 
+  openUpload() {
+    this.fileInput?.nativeElement.click();
+  }
+
+  onFileSelect(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.length) {
+      this.uploadFiles(Array.from(input.files));
+      input.value = '';
+    }
+  }
+
   private uploadFiles(files: File[]) {
     this.uploading.set(true);
     let completed = 0;
     for (const file of files) {
       this.docService.upload(this.kbId(), file).subscribe({
         next: resp => {
-          this.snack.open(`"${file.name}" queued for processing (task: ${resp.task_id.slice(0, 8)}…)`, 'OK', { duration: 5000 });
+          this.snackbarService.show(`"${file.name}" queued for processing (task: ${resp.task_id.slice(0, 8)}…)`, 'success');
           completed++;
           if (completed === files.length) {
             this.uploading.set(false);
@@ -115,7 +119,7 @@ export class DocumentsComponent implements OnInit, OnDestroy {
           }
         },
         error: (err: Error) => {
-          this.snack.open(err.message, 'Close', { duration: 5000 });
+          this.snackbarService.show(err.message, 'error');
           completed++;
           if (completed === files.length) this.uploading.set(false);
         },
@@ -125,12 +129,15 @@ export class DocumentsComponent implements OnInit, OnDestroy {
 
   reprocess(docId: string) {
     this.docService.reprocess(this.kbId(), docId, { force: true }).subscribe({
-      next: () => { this.snack.open('Reprocessing queued', 'OK', { duration: 3000 }); this.loadDocuments(); },
-      error: (err: Error) => this.snack.open(err.message, 'Close', { duration: 4000 }),
+      next: () => { this.snackbarService.show('Reprocessing queued', 'info'); this.loadDocuments(); },
+      error: (err: Error) => this.snackbarService.show(err.message, 'error'),
     });
   }
 
-  statusClass(status: string): string {
-    return `status-badge status-${status.toLowerCase()}`;
+  deleteDocument(docId: string) {
+    this.docService.delete(this.kbId(), docId).subscribe({
+      next: () => { this.snackbarService.show('Dokument usunięty', 'success'); this.loadDocuments(); },
+      error: (err: Error) => this.snackbarService.show(err.message, 'error'),
+    });
   }
 }

@@ -19,6 +19,7 @@ from typing import Any
 from uuid import UUID
 
 from mindforge.domain.models import (
+    ConceptEdge,
     ConceptNeighborhood,
     ConceptNode,
     RelatedConceptSummary,
@@ -29,6 +30,7 @@ from mindforge.domain.models import (
 from mindforge.infrastructure.graph.cypher_queries import (
     FIND_WEAK_CONCEPTS,
     FULLTEXT_SEARCH,
+    GET_CONCEPT_EDGES,
     GET_CONCEPTS,
     GET_LESSON_CONCEPTS,
     RETRIEVE_CONCEPT_NEIGHBORHOOD,
@@ -226,6 +228,32 @@ class Neo4jRetrievalAdapter:
             )
             for r in records
         ]
+
+    async def get_concept_edges(self, kb_id: UUID) -> list[ConceptEdge]:
+        kb_id_str = str(kb_id)
+        async with self._ctx.session() as session:
+            result = await session.run(GET_CONCEPT_EDGES, kb_id=kb_id_str)
+            records = await result.data()
+
+        edges: list[ConceptEdge] = []
+        seen: set[tuple[str, str]] = set()
+        for r in records:
+            src = r["source"]
+            tgt = r["target"]
+            if not src or not tgt or src == tgt:
+                continue
+            key = tuple(sorted((src, tgt)))
+            if key in seen:
+                continue
+            seen.add(key)
+            edges.append(
+                ConceptEdge(
+                    source=src,
+                    target=tgt,
+                    relation=r.get("relation") or "related_to",
+                )
+            )
+        return edges
 
     async def get_lesson_concepts(
         self, kb_id: UUID, lesson_id: str

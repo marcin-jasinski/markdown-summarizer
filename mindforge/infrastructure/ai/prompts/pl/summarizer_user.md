@@ -1,4 +1,4 @@
-Document content:
+Treść dokumentu:
 {content}
 
 {image_context}

@@ -1,86 +1,90 @@
-<div class="page-container">
-  <div class="page-header">
-    <h1>Documents</h1>
+<div class="mf-docs-page">
+  <div class="mf-docs-header">
+    <div>
+      <h1 class="mf-docs-title">Dokumenty</h1>
+      <p class="mf-docs-subtitle">Zarządzaj dokumentami w bazie wiedzy</p>
+    </div>
+    <button class="mf-btn-primary" (click)="openUpload()">+ Prześlij Dokument</button>
   </div>
 
-  <!-- Upload zone -->
   <div
-    class="upload-zone"
-    [class.drag-active]="dragOver()"
-    (dragover)="onDragOver($event)"
-    (dragleave)="onDragLeave()"
+    class="mf-upload-zone"
+    [class.mf-upload-zone-dragover]="isDragOver()"
+    (dragover)="$event.preventDefault(); isDragOver.set(true)"
+    (dragleave)="isDragOver.set(false)"
     (drop)="onDrop($event)"
-    (click)="fileInput.click()"
   >
-    <mat-icon class="upload-icon">upload_file</mat-icon>
-    <p class="upload-title">
-      @if (uploading()) {
-        Uploading…
-      } @else {
-        Drop files here or <strong>click to browse</strong>
-      }
+    <div class="mf-upload-icon">📄</div>
+    <p class="mf-upload-text">
+      Przeciągnij i upuść pliki lub
+      <button class="mf-link" (click)="openUpload()">wybierz pliki</button>
     </p>
-    <p class="upload-hint">Supported: .md, .pdf, .docx, .txt (max 10 MB)</p>
-    @if (uploading()) {
-      <mat-progress-bar mode="indeterminate" />
-    }
+    <p class="mf-upload-hint">PDF, DOCX, TXT — do 50MB</p>
+    <input
+      type="file"
+      class="mf-upload-input"
+      #fileInput
+      accept=".pdf,.docx,.txt"
+      multiple
+      (change)="onFileSelect($event)"
+    />
   </div>
-  <input
-    #fileInput
-    type="file"
-    multiple
-    accept=".md,.pdf,.docx,.txt"
-    hidden
-    (change)="onFileInput($event)"
-  />
 
-  <!-- Documents table -->
-  @if (loading()) {
-    <mat-progress-bar mode="indeterminate" />
-  } @else {
-    <mat-card class="docs-card">
-      <table mat-table [dataSource]="documents()" class="docs-table">
-        <ng-container matColumnDef="title">
-          <th mat-header-cell *matHeaderCellDef>Title</th>
-          <td mat-cell *matCellDef="let doc">
-            <span class="doc-title">{{ doc.title || doc.source_filename }}</span>
-            <span class="doc-lesson">{{ doc.lesson_id }}</span>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef>Status</th>
-          <td mat-cell *matCellDef="let doc">
-            <span [class]="statusClass(doc.status)">{{ doc.status }}</span>
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="mime_type">
-          <th mat-header-cell *matHeaderCellDef>Format</th>
-          <td mat-cell *matCellDef="let doc">{{ doc.mime_type }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="created_at">
-          <th mat-header-cell *matHeaderCellDef>Uploaded</th>
-          <td mat-cell *matCellDef="let doc">{{ doc.created_at | date: 'short' }}</td>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
-          <td mat-cell *matCellDef="let doc">
-            <button mat-icon-button matTooltip="Reprocess" (click)="reprocess(doc.document_id)">
-              <mat-icon>refresh</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="doc-row"></tr>
-      </table>
-
-      @if (documents().length === 0) {
-        <p class="empty-docs">No documents yet. Upload one above.</p>
+  @if (isLoading()) {
+    <div class="mf-docs-table-wrap">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="mf-docs-skeleton-row"></div>
       }
-    </mat-card>
+    </div>
+  } @else if (documents().length === 0) {
+    <div class="mf-docs-empty">
+      <p>Brak dokumentów. Prześlij pierwszy dokument, aby zacząć.</p>
+    </div>
+  } @else {
+    <div class="mf-docs-table-wrap">
+      <table class="mf-docs-table">
+        <thead>
+          <tr>
+            <th>Nazwa</th>
+            <th>Format</th>
+            <th>Status</th>
+            <th>Data</th>
+            <th>Akcje</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (doc of documents(); track doc.document_id) {
+            <tr class="mf-docs-row">
+              <td class="mf-docs-name">{{ doc.source_filename }}</td>
+              <td>
+                <span class="mf-chip-sm">{{ doc.mime_type }}</span>
+              </td>
+              <td>
+                <span class="mf-status-chip" [class]="'mf-status-' + doc.status">{{
+                  doc.status
+                }}</span>
+              </td>
+              <td class="mf-docs-date">{{ doc.created_at | date: 'dd.MM.yyyy' }}</td>
+              <td>
+                <button
+                  class="mf-icon-btn"
+                  title="Przetwórz ponownie"
+                  (click)="reprocess(doc.document_id)"
+                >
+                  🔄
+                </button>
+                <button
+                  class="mf-icon-btn mf-icon-btn-danger"
+                  title="Usuń"
+                  (click)="deleteDocument(doc.document_id)"
+                >
+                  🗑
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
   }
 </div>

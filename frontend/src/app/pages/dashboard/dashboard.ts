@@ -6,13 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { Dialog } from '@angular/cdk/dialog';
 import { KnowledgeBaseService } from '../../core/services/knowledge-base.service';
 import { KbCreateDialogComponent } from './kb-create-dialog';
 import type { KnowledgeBaseResponse } from '../../core/models/api.models';
@@ -23,17 +17,14 @@ import type { KnowledgeBaseResponse } from '../../core/models/api.models';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     RouterLink,
-    MatCardModule, MatButtonModule, MatIconModule,
-    MatProgressBarModule, MatChipsModule, MatDialogModule,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class DashboardComponent implements OnInit {
   private readonly kbService = inject(KnowledgeBaseService);
-  private readonly dialog = inject(MatDialog);
+  private readonly dialog = inject(Dialog);
   private readonly router = inject(Router);
-  private readonly snack = inject(MatSnackBar);
 
   readonly kbs = signal<KnowledgeBaseResponse[]>([]);
   readonly loading = signal(true);
@@ -52,7 +43,7 @@ export class DashboardComponent implements OnInit {
 
   openCreateDialog() {
     const ref = this.dialog.open(KbCreateDialogComponent, { width: '440px' });
-    ref.afterClosed().subscribe(result => {
+    ref.closed.subscribe(result => {
       if (result) this.loadKBs();
     });
   }

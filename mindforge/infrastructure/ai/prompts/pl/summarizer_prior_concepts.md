@@ -1,2 +1,2 @@
-Existing concepts in this knowledge base (use for continuity, do not duplicate):
+Istniejące pojęcia w tej bazie wiedzy (użyj dla zachowania ciągłości, nie duplikuj):
 {concepts}

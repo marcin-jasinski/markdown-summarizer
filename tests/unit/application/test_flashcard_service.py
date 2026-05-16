@@ -86,13 +86,79 @@ def _make_card_state(
 
 class TestGetDueCards:
     @pytest.mark.asyncio
-    async def test_returns_empty_when_no_due_cards(self):
+    async def test_returns_empty_when_no_due_cards_and_no_artifact_cards(self):
         study_progress = AsyncMock()
         study_progress.get_due_cards.return_value = []
+        artifact_repo = AsyncMock()
+        artifact_repo.list_flashcards_for_kb.return_value = []
 
-        service = _make_service(study_progress=study_progress)
+        service = _make_service(
+            artifact_repo=artifact_repo, study_progress=study_progress
+        )
         result = await service.get_due_cards(uuid4(), uuid4())
         assert result == []
+
+    @pytest.mark.asyncio
+    async def test_unreviewed_cards_in_artifacts_are_returned_as_due(self):
+        """Brand-new flashcards (no study_progress row yet) must surface as due.
+
+        Regression for the "flashcards don't work at all" bug: a fresh user
+        with newly-generated cards should immediately see them.
+        """
+        kb_id = uuid4()
+        cards = [
+            _make_flashcard(kb_id, front="Q1", back="A1", lesson_id="l1"),
+            _make_flashcard(kb_id, front="Q2", back="A2", lesson_id="l2"),
+        ]
+        study_progress = AsyncMock()
+        study_progress.get_due_cards.return_value = []  # no reviews yet
+        artifact_repo = AsyncMock()
+        artifact_repo.list_flashcards_for_kb.return_value = cards
+
+        service = _make_service(
+            artifact_repo=artifact_repo, study_progress=study_progress
+        )
+        result = await service.get_due_cards(uuid4(), kb_id)
+
+        assert len(result) == 2
+        fronts = {r.front for r in result}
+        assert fronts == {"Q1", "Q2"}
+        # Default SM-2 state for new cards.
+        for r in result:
+            assert r.ease_factor == 2.5
+            assert r.interval == 0
+            assert r.repetitions == 0
+            assert r.next_review == date.today()
+
+    @pytest.mark.asyncio
+    async def test_combines_scheduled_and_new_cards_without_duplicates(self):
+        kb_id = uuid4()
+        reviewed = _make_flashcard(kb_id, front="OLD", back="old")
+        new_card = _make_flashcard(kb_id, front="NEW", back="new", lesson_id="l2")
+        reviewed_state = _make_card_state(
+            card_id=reviewed.card_id,
+            kb_id=kb_id,
+            ease_factor=1.9,
+            interval=4,
+            repetitions=2,
+        )
+
+        study_progress = AsyncMock()
+        study_progress.get_due_cards.return_value = [reviewed_state]
+        artifact_repo = AsyncMock()
+        artifact_repo.list_flashcards_for_kb.return_value = [reviewed, new_card]
+
+        service = _make_service(
+            artifact_repo=artifact_repo, study_progress=study_progress
+        )
+        result = await service.get_due_cards(uuid4(), kb_id)
+
+        assert len(result) == 2
+        by_front = {r.front: r for r in result}
+        assert by_front["OLD"].ease_factor == 1.9
+        assert by_front["OLD"].interval == 4
+        assert by_front["NEW"].ease_factor == 2.5
+        assert by_front["NEW"].interval == 0
 
     @pytest.mark.asyncio
     async def test_joins_card_content_from_artifacts(self):
@@ -273,17 +339,22 @@ class TestListAllCards:
 
 class TestDueCount:
     @pytest.mark.asyncio
-    async def test_delegates_to_study_progress(self):
-        user_id = uuid4()
+    async def test_counts_combined_due_and_new_cards(self):
+        """due_count must mirror get_due_cards (scheduled + new)."""
         kb_id = uuid4()
+        new_cards = [_make_flashcard(kb_id) for _ in range(3)]
+
         study_progress = AsyncMock()
-        study_progress.due_count.return_value = 7
+        study_progress.get_due_cards.return_value = []
+        artifact_repo = AsyncMock()
+        artifact_repo.list_flashcards_for_kb.return_value = new_cards
 
-        service = _make_service(study_progress=study_progress)
-        count = await service.due_count(user_id, kb_id)
+        service = _make_service(
+            artifact_repo=artifact_repo, study_progress=study_progress
+        )
+        count = await service.due_count(uuid4(), kb_id)
 
-        assert count == 7
-        study_progress.due_count.assert_called_once_with(user_id, kb_id, date.today())
+        assert count == 3
 
 
 # ---------------------------------------------------------------------------

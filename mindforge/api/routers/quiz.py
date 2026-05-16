@@ -45,7 +45,8 @@ async def start_quiz(
     quiz_service: Annotated[QuizService, Depends(get_quiz_service)],
 ) -> QuizQuestionResponse:
     """Start a new quiz session and return the first question (no sensitive fields)."""
-    if await kb_repo.get_by_id(kb_id, owner_id=current_user.user_id) is None:
+    kb = await kb_repo.get_by_id(kb_id, owner_id=current_user.user_id)
+    if kb is None:
         raise HTTPException(status_code=404, detail="Baza wiedzy nie istnieje.")
 
     try:
@@ -53,6 +54,7 @@ async def start_quiz(
             user_id=current_user.user_id,
             kb_id=kb_id,
             topic=payload.topic,
+            prompt_locale=kb.prompt_locale,
         )
     except NoWeakConceptsError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
@@ -79,9 +81,14 @@ async def submit_answer(
     session_id: UUID,
     payload: SubmitAnswerRequest,
     current_user: Annotated[User, Depends(get_current_user)],
+    kb_repo: Annotated[object, Depends(get_kb_repo)],
     quiz_service: Annotated[QuizService, Depends(get_quiz_service)],
 ) -> AnswerEvaluationResponse:
     """Server-authoritative answer evaluation. Never exposes reference_answer."""
+    kb = await kb_repo.get_by_id(kb_id, owner_id=current_user.user_id)
+    if kb is None:
+        raise HTTPException(status_code=404, detail="Baza wiedzy nie istnieje.")
+
     try:
         result = await quiz_service.submit_answer(
             user_id=current_user.user_id,
@@ -89,6 +96,7 @@ async def submit_answer(
             session_id=session_id,
             question_id=payload.question_id,
             user_answer=payload.user_answer,
+            prompt_locale=kb.prompt_locale,
         )
     except QuizSessionNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc))

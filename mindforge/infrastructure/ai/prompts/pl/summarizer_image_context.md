@@ -1,2 +1,2 @@
-Image descriptions from this document:
+Opisy obrazów z tego dokumentu:
 {descriptions}

@@ -1,66 +1,76 @@
-<div class="page-container">
-  <div class="page-header">
-    <h1>Knowledge Bases</h1>
-    <button mat-flat-button (click)="openCreateDialog()"><mat-icon>add</mat-icon> New KB</button>
+<div class="mf-db-page">
+  <div class="mf-db-header">
+    <div>
+      <h1 class="mf-db-title">Knowledge Bases</h1>
+      <p class="mf-db-subtitle">Manage your knowledge and learn effectively</p>
+    </div>
+    <button class="mf-btn-primary" (click)="openCreateDialog()">+ New KB</button>
   </div>
 
   @if (loading()) {
-    <mat-progress-bar mode="indeterminate" />
-  }
-
-  @if (!loading() && kbs().length === 0) {
-    <div class="empty-state">
-      <mat-icon class="empty-icon">library_books</mat-icon>
-      <h2>No knowledge bases yet</h2>
-      <p>Create your first knowledge base and start uploading documents.</p>
-      <button mat-flat-button (click)="openCreateDialog()">
-        <mat-icon>add</mat-icon> Create Knowledge Base
-      </button>
+    <div class="mf-db-grid">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="mf-db-skeleton"></div>
+      }
+    </div>
+  } @else if (kbs().length === 0) {
+    <div class="mf-db-empty">
+      <div class="mf-db-empty-icon">📚</div>
+      <h2 class="mf-db-empty-title">No knowledge bases yet</h2>
+      <p class="mf-db-empty-text">
+        Create your first knowledge base and start uploading documents.
+      </p>
+      <button class="mf-btn-primary" (click)="openCreateDialog()">Create Knowledge Base</button>
+    </div>
+  } @else {
+    <div class="mf-db-grid">
+      @for (kb of kbs(); track kb.kb_id) {
+        <div
+          class="mf-db-card"
+          (click)="navigateToKb(kb.kb_id)"
+          (keydown.enter)="navigateToKb(kb.kb_id)"
+          tabindex="0"
+          role="button"
+        >
+          <div class="mf-db-card-accent"></div>
+          <div class="mf-db-card-body">
+            <div class="mf-db-icon">📖</div>
+            <h3 class="mf-db-name">{{ kb.name }}</h3>
+            @if (kb.description) {
+              <p class="mf-db-desc">{{ kb.description }}</p>
+            }
+            <span class="mf-chip-sm">{{
+              kb.prompt_locale === 'pl' ? '🇵🇱 Polish' : '🇬🇧 English'
+            }}</span>
+          </div>
+          <div class="mf-db-card-footer">
+            <button
+              class="mf-db-action-btn"
+              [routerLink]="['/kb', kb.kb_id, 'documents']"
+              (click)="$event.stopPropagation()"
+              title="Documents"
+            >
+              📄 Docs
+            </button>
+            <button
+              class="mf-db-action-btn"
+              [routerLink]="['/kb', kb.kb_id, 'quiz']"
+              (click)="$event.stopPropagation()"
+              title="Quiz"
+            >
+              🧠 Quiz
+            </button>
+            <button
+              class="mf-db-action-btn"
+              [routerLink]="['/kb', kb.kb_id, 'chat']"
+              (click)="$event.stopPropagation()"
+              title="Chat"
+            >
+              💬 Chat
+            </button>
+          </div>
+        </div>
+      }
     </div>
   }
-
-  <div class="card-grid">
-    @for (kb of kbs(); track kb.kb_id) {
-      <mat-card class="kb-card" (click)="navigateToKb(kb.kb_id)">
-        <mat-card-header>
-          <mat-icon mat-card-avatar class="kb-avatar">library_books</mat-icon>
-          <mat-card-title>{{ kb.name }}</mat-card-title>
-          <mat-card-subtitle>{{ kb.document_count }} document(s)</mat-card-subtitle>
-        </mat-card-header>
-
-        <mat-card-content>
-          <p class="kb-description">{{ kb.description || 'No description' }}</p>
-          <div class="kb-meta">
-            <mat-chip-set>
-              <mat-chip>{{ kb.prompt_locale === 'pl' ? '🇵🇱 Polish' : '🇬🇧 English' }}</mat-chip>
-            </mat-chip-set>
-          </div>
-        </mat-card-content>
-
-        <mat-card-actions>
-          <button
-            mat-button
-            [routerLink]="['/kb', kb.kb_id, 'documents']"
-            (click)="$event.stopPropagation()"
-          >
-            <mat-icon>description</mat-icon> Docs
-          </button>
-          <button
-            mat-button
-            [routerLink]="['/kb', kb.kb_id, 'quiz']"
-            (click)="$event.stopPropagation()"
-          >
-            <mat-icon>quiz</mat-icon> Quiz
-          </button>
-          <button
-            mat-button
-            [routerLink]="['/kb', kb.kb_id, 'chat']"
-            (click)="$event.stopPropagation()"
-          >
-            <mat-icon>chat</mat-icon> Chat
-          </button>
-        </mat-card-actions>
-      </mat-card>
-    }
-  </div>
 </div>

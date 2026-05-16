@@ -1,0 +1,154 @@
+orchestrator:
+  started_phase: phase-8-implementation
+  completed_phases: [phase-1-codebase-analysis, phase-2-gap-analysis, phase-4-ui-mockups, phase-5-specification, phase-6-spec-audit, phase-7-planning]
+  failed_phases: []
+
+  auto_fix_attempts:
+    phase-1: 0
+    phase-2: 0
+    phase-5: 0
+    phase-7: 0
+    phase-8: 0
+    phase-11: 0
+
+  options:
+    spec_audit_enabled: true
+    skip_test_suite: false
+    e2e_enabled: null
+    user_docs_enabled: null
+    code_review_enabled: true
+    pragmatic_review_enabled: true
+    reality_check_enabled: true
+    production_check_enabled: true
+
+  created: "2026-04-29T00:00:00Z"
+  updated: "2026-04-29T00:00:00Z"
+  task_path: .maister/tasks/development/2026-04-29-mindforge-ui-redesign-impl
+
+task:
+  title: "MindForge UI Redesign Implementation"
+  description: >
+    Implement the MindForge GUI redesign: replace Angular Material 3 with Angular CDK +
+    Tailwind CSS v4, introduce a custom --mf-* design token system, swap Roboto for Inter,
+    redesign all 8 screens (Login, Dashboard, Documents, Quiz, Flashcards, Search, Chat,
+    Concept Map), add collapsible sidebar, add dark mode ThemeService, and add
+    GET /api/v1/users/me/stats backend endpoint for the gamification widget.
+  status: in_progress
+  tags: [frontend, angular, tailwind, ui-redesign, css, cytoscape]
+  priority: high
+
+task_context:
+  risk_level: high
+  clarifications_resolved: true
+  scope_expanded: false
+  architecture_decision: "Angular CDK + Tailwind CSS v4 replacing Angular Material 3"
+  tech_clarified: true
+
+  task_characteristics:
+    has_reproducible_defect: false
+    modifies_existing_code: true
+    creates_new_entities: true
+    involves_data_operations: true
+    ui_heavy: true
+
+  research_reference:
+    path: .maister/tasks/product-design/2026-04-29-mindforge-ui-redesign
+    research_question: "How should MindForge be redesigned to look beautiful, modern, and inspiring?"
+    research_type: product-design
+    confidence_level: high
+
+  phase_summaries:
+    research:
+      summary: >
+        Complete product design with 8-section feature spec. Angular CDK + Tailwind v4
+        replaces Angular Material 3. --mf-* design token system with 3-tier surfaces.
+        Inter font replaces Roboto. Collapsible sidebar with gamification footer.
+        Concept map Cytoscape restyle + 280px node detail panel. Dark mode ThemeService.
+        New backend endpoint GET /api/v1/users/me/stats.
+      key_findings:
+        - "Primary color: #5B4FE9 (indigo-violet)"
+        - "3-tier surface: #FFFFFF / #F8F9FA / #F0F2F5"
+        - "Typography: Inter variable font all weights 100-900"
+        - "Sidebar: 240px expanded / 64px icon-only, persisted in localStorage"
+        - "Concept map: round-rectangle nodes, thin bezier edges, node detail side panel"
+        - "Dark mode: [data-theme=dark] on <html>, ThemeService, OS preference detection"
+        - "New endpoint: GET /api/v1/users/me/stats -> { streak_days, due_today }"
+      recommended_approach: >
+        6-phase migration: install Tailwind+CDK -> create tokens -> create components
+        -> screen-by-screen M3 removal -> uninstall @angular/material -> Inter font swap
+      decisions_made:
+        - "UI Library: Angular CDK + Tailwind CSS v4"
+        - "Token Architecture: Custom CSS --mf-* tokens with Tailwind @theme"
+        - "Concept Map: Restyle + 280px node detail side panel"
+        - "Navigation: Slim toolbar + collapsible sidebar (64px/240px)"
+        - "Gamification: Sidebar footer widget (streak + due count)"
+
+    codebase_analysis:
+      key_files:
+        - frontend/src/styles.scss
+        - frontend/src/index.html
+        - frontend/src/app/shell/shell.ts
+        - frontend/src/app/pages/documents/documents.ts
+        - frontend/src/app/pages/concept-map/concept-map.ts
+        - mindforge/api/schemas.py
+        - mindforge/api/main.py
+      primary_language: "TypeScript/Python"
+      summary: >
+        32 frontend files need Angular Material 3 removed and replaced with CDK + Tailwind v4.
+        @angular/cdk already installed (v21.2.7). No ThemeService exists. No stats endpoint exists.
+        Cytoscape uses hardcoded dark stylesheet. Flashcard 3D flip animation can be preserved.
+        MatSnackBar (7 consumers) and MatDialog are the highest-breadth replacement targets.
+        Backend: 1 new router, 1 schema, 1 main.py registration needed.
+        Lucide icons will replace Material Icons. Tailwind v4 via @tailwindcss/postcss.
+        Migration: screen-by-screen incremental approach.
+
+    clarifications: []
+    gap_analysis:
+      integration_points:
+        - frontend/src/styles.scss
+        - frontend/angular.json
+        - mindforge/api/routers/users.py (new)
+        - mindforge/api/main.py
+        - mindforge/api/schemas.py
+        - frontend/src/app/core/models/api.models.ts
+        - frontend/src/app/shell/shell.ts
+      summary: >
+        30+ discrete deliverables identified: build infra (Tailwind+PostCSS), design tokens,
+        8 mf-* components, shell redesign (gamification footer, 64/240px collapse), 9 screen
+        redesigns (8 spec + knowledge-bases), ThemeService, stats endpoint stub.
+        Critical decisions resolved: Tailwind Preflight disabled during transition, MatSnackBar
+        cross-cutting migration before screens, stats in new users.py.
+    scope_clarifications:
+      scope_expanded: true
+      summary: >
+        Screen 9 added (knowledge-bases). Tailwind Preflight disabled during incremental
+        migration. MatSnackBar+MatDialog migrated cross-cutting first. Stats in new users.py.
+        Concept map: slide-in side panel. ThemeService: APP_INITIALIZER.
+    ui_mockups:
+      components_designed:
+        - "Login (split hero layout)"
+        - "Dashboard / Knowledge Bases Grid"
+        - "Documents list with progress"
+        - "Concept Map with slide-in node detail panel"
+        - "Flashcards (SRS buttons)"
+        - "Quiz (evaluated state)"
+        - "Search results with chips"
+        - "Chat (bubble layout)"
+        - "Knowledge Bases (CDK dialog)"
+      summary: "9 screens mocked (Login, Dashboard, Documents, Concept Map, Flashcards, Quiz, Search, Chat, Knowledge-Bases). Full component reference table + consistency checklist."
+    specification:
+      summary: >
+        48 requirements across 9 FR groups: build infra (FR-1), core services + ThemeService (FR-2),
+        backend stats stub (FR-3), 8 mf-* components (FR-4), shell redesign (FR-5),
+        cross-cutting M3 migration (FR-6), 9 screen redesigns (FR-7), dark mode (FR-8),
+        Angular Material removal (FR-9). 14 new files, 32 modified files.
+    architecture_decision:
+      decision: "Angular CDK + Tailwind CSS v4 replacing Angular Material 3"
+      summary: null
+
+verification_context:
+  last_status: null
+  issues_found: []
+  fixes_applied: []
+  decisions_made: []
+  reverify_count: 0

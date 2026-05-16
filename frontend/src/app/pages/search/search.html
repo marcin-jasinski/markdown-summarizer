@@ -1,55 +1,53 @@
-<div class="page-container search-page">
-  <div class="page-header">
-    <h1>Search</h1>
+<div class="mf-search-page">
+  <div class="mf-search-header">
+    <h1 class="mf-search-title">Wyszukiwarka</h1>
   </div>
 
-  <div class="search-bar">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Ask your knowledge base…</mat-label>
-      <input
-        matInput
-        [ngModel]="query()"
-        (ngModelChange)="query.set($event)"
-        (keydown)="onKeydown($event)"
-        autocomplete="off"
-      />
-      <mat-icon matPrefix>search</mat-icon>
-    </mat-form-field>
-    <button mat-flat-button (click)="search()" [disabled]="loading() || !query().trim()">
-      @if (loading()) {
-        <mat-spinner diameter="20" />
-      } @else {
-        Search
+  <div class="mf-search-bar">
+    <input
+      class="mf-search-input"
+      [value]="query()"
+      (input)="query.set($any($event.target).value)"
+      placeholder="Szukaj w bazie wiedzy..."
+      (keydown.enter)="search()"
+    />
+    <button class="mf-btn-primary" (click)="search()">Szukaj</button>
+  </div>
+
+  @if (activeFilters().length > 0) {
+    <div class="mf-filter-chips">
+      @for (filter of activeFilters(); track filter) {
+        <div class="mf-removable-chip">
+          {{ filter }}
+          <button class="mf-chip-remove" (click)="removeFilter(filter)">×</button>
+        </div>
       }
-    </button>
-  </div>
-
-  @if (searched() && results().length === 0) {
-    <p class="no-results">No results found for "{{ query() }}"</p>
+    </div>
   }
 
-  <div class="results-list">
-    @for (
-      item of results();
-      track item.source_document_id + item.source_lesson_id;
-      let i = $index
-    ) {
-      <mat-card class="result-card">
-        <mat-card-header>
-          <mat-card-subtitle>
-            <mat-chip-set>
-              <mat-chip>{{ item.source_lesson_id }}</mat-chip>
-              <mat-chip>{{ scorePercent(item.score) }}% match</mat-chip>
-            </mat-chip-set>
-          </mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <p class="result-content">{{ item.content }}</p>
-        </mat-card-content>
-      </mat-card>
-      @if (i < results().length - 1) {
-        <mat-divider />
+  @if (isLoading()) {
+    <div class="mf-search-results">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="mf-result-skeleton"></div>
       }
-    }
-  </div>
+    </div>
+  } @else if (results().length > 0) {
+    <div class="mf-search-results">
+      @for (result of results(); track $index) {
+        <div class="mf-result-card">
+          @if (result.source_lesson_id) {
+            <span class="mf-result-chip">{{ result.source_lesson_id }}</span>
+          }
+          <p class="mf-result-text" [innerHTML]="result.content"></p>
+          @if (result.score !== undefined) {
+            <span class="mf-result-score">{{ (result.score * 100).toFixed(0) }}%</span>
+          }
+        </div>
+      }
+    </div>
+  } @else if (hasSearched()) {
+    <div class="mf-search-empty">
+      <p>Brak wyników dla "{{ query() }}"</p>
+    </div>
+  }
 </div>

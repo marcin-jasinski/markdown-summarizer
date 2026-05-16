@@ -370,6 +370,7 @@ def create_app() -> FastAPI:
         tasks,
         interactions,
         admin,
+        users,
     )
 
     app.include_router(health.router)
@@ -385,6 +386,7 @@ def create_app() -> FastAPI:
     app.include_router(tasks.router)
     app.include_router(interactions.router)
     app.include_router(admin.router)
+    app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 
     # Serve Angular SPA (only if built)
     spa_path = os.path.join(

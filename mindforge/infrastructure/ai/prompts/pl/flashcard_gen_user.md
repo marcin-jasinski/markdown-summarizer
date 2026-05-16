@@ -1,8 +1,8 @@
-Document summary:
+Streszczenie dokumentu:
 {summary}
 
-Key points:
+Kluczowe punkty:
 {key_points}
 
-Document content (excerpt):
+Treść dokumentu (fragment):
 {content_excerpt}

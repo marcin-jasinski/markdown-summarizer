@@ -425,6 +425,41 @@ class TestStartSession:
         assert isinstance(published_event, QuizSessionStarted)
         assert published_event.user_id == user_id
 
+    @pytest.mark.asyncio
+    async def test_kb_prompt_locale_threaded_to_agent_context(self):
+        """Regression: KB's prompt_locale must override the default locale on
+        the AgentContext.settings handed to QuizGeneratorAgent."""
+        retrieval = AsyncMock()
+        retrieval.find_weak_concepts.return_value = [_make_weak_concept()]
+        retrieval.retrieve_concept_neighborhood.return_value = _make_neighborhood()
+
+        captured_settings = []
+
+        async def _capture(ctx: AgentContext) -> AgentResult:
+            captured_settings.append(ctx.settings)
+            ctx.metadata["quiz_question"] = QuizQuestion(
+                question_id="",
+                question_text="Q?",
+                question_type="open_ended",
+                reference_answer="A",
+                grounding_context="C",
+                lesson_id="x",
+            )
+            return AgentResult(success=True, output_key="quiz_question")
+
+        mock_gen = AsyncMock()
+        mock_gen.execute = AsyncMock(side_effect=_capture)
+        service = _make_service(
+            retrieval=retrieval,
+            quiz_sessions=AsyncMock(),
+            interaction_store=AsyncMock(),
+            quiz_generator=mock_gen,
+        )
+        await service.start_session(uuid4(), uuid4(), prompt_locale="en")
+
+        assert len(captured_settings) == 1
+        assert captured_settings[0].prompt_locale == "en"
+
 
 # ---------------------------------------------------------------------------
 # submit_answer tests

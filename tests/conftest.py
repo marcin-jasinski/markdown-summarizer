@@ -12,6 +12,7 @@ import pytest
 from mindforge.domain.models import (
     CompletionResult,
     ConceptNeighborhood,
+    ConceptEdge,
     ConceptNode,
     DeadlineProfile,
     RelatedConceptSummary,
@@ -168,6 +169,7 @@ class StubRetrievalAdapter:
 
     def __init__(self) -> None:
         self.concepts: list[ConceptNode] = []
+        self.concept_edges: list[ConceptEdge] = []
         self.neighborhoods: dict[str, ConceptNeighborhood] = {}
         self.weak_concepts: list[WeakConcept] = []
         self.retrieval_results: list[RetrievalResult] = []
@@ -216,6 +218,10 @@ class StubRetrievalAdapter:
     async def get_concepts(self, kb_id: UUID) -> list[ConceptNode]:
         self.calls.append({"method": "get_concepts", "kb_id": kb_id})
         return list(self.concepts)
+
+    async def get_concept_edges(self, kb_id: UUID) -> list[ConceptEdge]:
+        self.calls.append({"method": "get_concept_edges", "kb_id": kb_id})
+        return list(self.concept_edges)
 
     async def get_lesson_concepts(
         self, kb_id: UUID, lesson_id: str

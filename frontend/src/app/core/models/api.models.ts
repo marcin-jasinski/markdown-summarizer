@@ -303,3 +303,12 @@ export interface LessonResponse {
   concept_count: number;
   last_processed_at: string | null;
 }
+
+// ---------------------------------------------------------------------------
+// User stats
+// ---------------------------------------------------------------------------
+
+export interface UserStatsResponse {
+  streak_days: number;
+  due_today: number;
+}

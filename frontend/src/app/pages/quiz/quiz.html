@@ -1,71 +1,66 @@
-<div class="page-container quiz-page">
-  @if (state() === 'idle') {
-    <div class="quiz-start">
-      <mat-icon class="quiz-hero-icon">quiz</mat-icon>
-      <h1>Quiz Mode</h1>
-      <p>Test your knowledge using AI-generated questions based on your weakest concepts.</p>
-      <button mat-flat-button (click)="startQuiz()">
-        <mat-icon>play_arrow</mat-icon> Start Quiz
-      </button>
+<div class="mf-quiz-page">
+  @if (quizState() === 'idle') {
+    <div class="mf-quiz-idle">
+      <div class="mf-quiz-idle-icon">🧠</div>
+      <h2 class="mf-quiz-idle-title">Gotowy na Quiz?</h2>
+      <p class="mf-quiz-idle-text">
+        Sprawdź swoją wiedzę z {{ lessonLabel() || 'tej bazy wiedzy' }}
+      </p>
+      <button class="mf-btn-primary" (click)="startQuiz()">Rozpocznij Quiz</button>
     </div>
   }
 
-  @if (state() === 'loading') {
-    <div class="quiz-loading">
-      <mat-spinner diameter="48" />
-      <p>Generating question…</p>
+  @if (quizState() === 'loading') {
+    <div class="mf-quiz-loading">
+      <div class="mf-quiz-skeleton"></div>
     </div>
   }
 
-  @if (state() === 'question' && question()) {
-    <mat-card class="question-card">
-      <mat-card-header>
-        <mat-icon mat-card-avatar>help_outline</mat-icon>
-        <mat-card-title>Question</mat-card-title>
-        <mat-card-subtitle>Lesson: {{ question()!.lesson_id }}</mat-card-subtitle>
-      </mat-card-header>
-      <mat-card-content>
-        <p class="question-text">{{ question()!.question_text }}</p>
-        <mat-form-field appearance="outline" class="answer-field">
-          <mat-label>Your answer</mat-label>
-          <textarea
-            matInput
-            [ngModel]="userAnswer()"
-            (ngModelChange)="userAnswer.set($event)"
-            rows="5"
-            maxlength="4000"
-            placeholder="Type your answer here…"
-          ></textarea>
-        </mat-form-field>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-flat-button (click)="submitAnswer()" [disabled]="!userAnswer().trim()">
-          <mat-icon>send</mat-icon> Submit Answer
+  @if (quizState() === 'question') {
+    <div class="mf-quiz-card">
+      @if (currentQuestion()?.lesson_id) {
+        <span class="mf-chip-label">{{ currentQuestion()!.lesson_id }}</span>
+      }
+      <p class="mf-quiz-question">{{ currentQuestion()?.question_text }}</p>
+      <div class="mf-quiz-answer-wrap">
+        <label class="mf-form-label">Twoja odpowiedź</label>
+        <textarea
+          class="mf-quiz-textarea"
+          [value]="answer()"
+          (input)="answer.set($any($event.target).value)"
+          placeholder="Wpisz swoją odpowiedź..."
+          rows="5"
+        ></textarea>
+      </div>
+      <div class="mf-quiz-actions">
+        <button class="mf-btn-primary" [disabled]="!answer().trim()" (click)="submitAnswer()">
+          Sprawdź
         </button>
-      </mat-card-actions>
-    </mat-card>
+      </div>
+    </div>
   }
 
-  @if (state() === 'evaluated' && evaluation()) {
-    <mat-card class="evaluation-card">
-      <mat-card-header>
-        <mat-icon mat-card-avatar [class]="scoreClass(evaluation()!.score)">
-          {{ evaluation()!.is_correct ? 'check_circle' : 'cancel' }}
-        </mat-icon>
-        <mat-card-title [class]="scoreClass(evaluation()!.score)">
-          {{ scoreLabel(evaluation()!.score) }} — {{ evaluation()!.score }}/5
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <p class="feedback-text">{{ evaluation()!.feedback }}</p>
-        <p class="your-answer"><em>Your answer:</em> {{ userAnswer() }}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-flat-button (click)="startQuiz()">
-          <mat-icon>skip_next</mat-icon> Next Question
-        </button>
-        <button mat-button routerLink="/dashboard">Done</button>
-      </mat-card-actions>
-    </mat-card>
+  @if (quizState() === 'evaluated') {
+    <div class="mf-quiz-card">
+      <div class="mf-quiz-result">
+        <span class="mf-score-badge" [class]="getScoreClass(currentResult()?.score)">
+          {{ currentResult()?.score }}/5
+        </span>
+        <p class="mf-quiz-feedback">{{ currentResult()?.feedback }}</p>
+      </div>
+      <div class="mf-quiz-actions">
+        <button class="mf-btn-primary" (click)="nextQuestion()">Następne pytanie</button>
+        <button class="mf-btn-ghost" (click)="endQuiz()">Zakończ</button>
+      </div>
+    </div>
+  }
+
+  @if (quizState() === 'finished') {
+    <div class="mf-quiz-idle">
+      <div class="mf-quiz-idle-icon">🎉</div>
+      <h2 class="mf-quiz-idle-title">Quiz zakończony!</h2>
+      <p class="mf-quiz-idle-text">Świetna robota! Kontynuuj naukę.</p>
+      <button class="mf-btn-primary" routerLink="/knowledge-bases">Wróć do Baz Wiedzy</button>
+    </div>
   }
 </div>

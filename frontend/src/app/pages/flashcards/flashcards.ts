@@ -7,11 +7,7 @@ import {
   computed,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MfSnackbarService } from '../../core/services/mf-snackbar.service';
 import { FlashcardService } from '../../core/services/flashcard.service';
 import type { FlashcardResponse } from '../../core/models/api.models';
 
@@ -19,16 +15,14 @@ import type { FlashcardResponse } from '../../core/models/api.models';
   selector: 'app-flashcards',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatCardModule, MatButtonModule, MatIconModule, MatProgressBarModule,
-  ],
+  imports: [],
   templateUrl: './flashcards.html',
   styleUrl: './flashcards.scss',
 })
 export class FlashcardsComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly flashcardService = inject(FlashcardService);
-  private readonly snack = inject(MatSnackBar);
+  private readonly snackbarService = inject(MfSnackbarService);
 
   readonly kbId = signal('');
   readonly cards = signal<FlashcardResponse[]>([]);
@@ -36,11 +30,13 @@ export class FlashcardsComponent implements OnInit {
   readonly flipped = signal(false);
   readonly loading = signal(true);
   readonly done = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
   readonly currentCard = computed(() => this.cards()[this.currentIndex()] ?? null);
   readonly progress = computed(() =>
     this.cards().length ? Math.round((this.currentIndex() / this.cards().length) * 100) : 0,
   );
+  readonly progressPct = this.progress;
 
   ngOnInit() {
     this.kbId.set(this.route.snapshot.paramMap.get('kbId') ?? '');
@@ -52,21 +48,31 @@ export class FlashcardsComponent implements OnInit {
     this.done.set(false);
     this.currentIndex.set(0);
     this.flipped.set(false);
+    this.errorMessage.set(null);
     this.flashcardService.getDueCards(this.kbId()).subscribe({
-      next: cards => { this.cards.set(cards); this.loading.set(false); if (!cards.length) this.done.set(true); },
-      error: () => this.loading.set(false),
+      next: (cards) => {
+        this.cards.set(cards);
+        this.loading.set(false);
+        if (!cards.length) this.done.set(true);
+      },
+      error: (err: Error) => {
+        const message = err?.message || 'Nie udało się załadować fiszek.';
+        this.errorMessage.set(message);
+        this.snackbarService.show(message, 'error');
+        this.loading.set(false);
+      },
     });
   }
 
   flip() {
-    this.flipped.update(v => !v);
+    this.flipped.update((v) => !v);
   }
 
   rate(rating: number) {
     const card = this.currentCard();
     if (!card) return;
     this.flashcardService.reviewCard(this.kbId(), { card_id: card.card_id, rating }).subscribe({
-      error: (err: Error) => this.snack.open(err.message, 'Close', { duration: 3000 }),
+      error: (err: Error) => this.snackbarService.show(err.message, 'error'),
     });
     this.next();
   }

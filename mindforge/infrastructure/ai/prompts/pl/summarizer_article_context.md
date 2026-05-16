@@ -1,2 +1,2 @@
-Related articles fetched from links in this document:
+Powiązane artykuły pobrane z linków w tym dokumencie:
 {articles}

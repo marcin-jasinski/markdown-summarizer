@@ -1,4 +1,4 @@
-Concept: {concept_label}
+Pojęcie: {concept_label}
 
-Context from knowledge base:
+Kontekst z bazy wiedzy:
 {retrieval_context}

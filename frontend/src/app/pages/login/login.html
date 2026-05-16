@@ -1,119 +1,93 @@
-<div class="login-page">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <div class="login-header">
-        <mat-icon class="brand-icon">psychology</mat-icon>
-        <h1 class="brand-title">MindForge</h1>
-        <p class="brand-subtitle">AI-powered knowledge mastery</p>
-      </div>
-    </mat-card-header>
+<div class="mf-login-page">
+  <div class="mf-login-hero">
+    <div class="mf-login-logo">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <rect width="48" height="48" rx="12" fill="rgba(255,255,255,0.2)" />
+        <path
+          d="M12 14l12 8 12-8M12 24l12 8 12-8M12 34h24"
+          stroke="white"
+          stroke-width="2.5"
+          stroke-linecap="round"
+        />
+      </svg>
+    </div>
+    <h1 class="mf-login-hero-title">MindForge</h1>
+    <p class="mf-login-hero-subtitle">Twoja inteligentna baza wiedzy z quizami i kartotekami</p>
+  </div>
 
-    <mat-card-content>
-      <!-- OAuth providers -->
-      <div class="oauth-section">
-        <button mat-stroked-button class="discord-btn" (click)="loginWithDiscord()">
-          <mat-icon svgIcon="discord" />
-          Continue with Discord
+  <div class="mf-login-auth">
+    <div class="mf-login-card">
+      <h2 class="mf-login-card-title">
+        @if (isLogin()) {
+          Zaloguj się
+        } @else {
+          Utwórz konto
+        }
+      </h2>
+
+      @if (discordEnabled()) {
+        <a class="mf-discord-btn" [href]="discordOauthUrl()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.08.114 18.1.133 18.105a19.995 19.995 0 0 0 6.002 3.03.077.077 0 0 0 .084-.028 13.907 13.907 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.072 13.072 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"
+            />
+          </svg>
+          Zaloguj przez Discord
+        </a>
+        <div class="mf-divider"><span>lub</span></div>
+      }
+
+      <form (ngSubmit)="onSubmit()">
+        <div class="mf-form-group">
+          <label class="mf-form-label">Email</label>
+          <input
+            class="mf-form-input"
+            type="email"
+            [value]="email()"
+            (input)="email.set($any($event.target).value)"
+            placeholder="twoj@email.pl"
+            required
+          />
+        </div>
+        <div class="mf-form-group">
+          <label class="mf-form-label">Hasło</label>
+          <input
+            class="mf-form-input"
+            type="password"
+            [value]="password()"
+            (input)="password.set($any($event.target).value)"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+        <button
+          class="mf-submit-btn"
+          type="submit"
+          [disabled]="isLoading()"
+          [class.loading]="isLoading()"
+        >
+          @if (isLoading()) {
+            <span class="mf-spinner"></span>
+          }
+          @if (isLogin()) {
+            Zaloguj się
+          } @else {
+            Utwórz konto
+          }
         </button>
+      </form>
+
+      <div class="mf-switch-mode">
+        @if (isLogin()) {
+          Nie masz konta?
+          <button class="mf-link-btn" type="button" (click)="isLogin.set(false)">
+            Utwórz konto
+          </button>
+        } @else {
+          Masz już konto?
+          <button class="mf-link-btn" type="button" (click)="isLogin.set(true)">Zaloguj się</button>
+        }
       </div>
-
-      <div class="divider-row">
-        <mat-divider />
-        <span class="divider-label">or</span>
-        <mat-divider />
-      </div>
-
-      <!-- Email / Password tabs -->
-      <mat-tab-group animationDuration="200ms">
-        <mat-tab label="Sign In">
-          <form [formGroup]="loginForm" (ngSubmit)="submitLogin()" class="auth-form">
-            <mat-form-field appearance="outline">
-              <mat-label>Email</mat-label>
-              <input matInput type="email" formControlName="email" autocomplete="email" />
-              <mat-icon matPrefix>email</mat-icon>
-              @if (loginForm.get('email')?.hasError('email')) {
-                <mat-error>Enter a valid email address</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Password</mat-label>
-              <input
-                matInput
-                [type]="hidePassword() ? 'password' : 'text'"
-                formControlName="password"
-                autocomplete="current-password"
-              />
-              <mat-icon matPrefix>lock</mat-icon>
-              <button
-                mat-icon-button
-                matSuffix
-                type="button"
-                (click)="hidePassword.update((v) => !v)"
-              >
-                <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
-              </button>
-            </mat-form-field>
-
-            <button mat-flat-button type="submit" [disabled]="loading() || loginForm.invalid">
-              @if (loading()) {
-                <mat-spinner diameter="20" />
-              } @else {
-                Sign In
-              }
-            </button>
-          </form>
-        </mat-tab>
-
-        <mat-tab label="Register">
-          <form [formGroup]="registerForm" (ngSubmit)="submitRegister()" class="auth-form">
-            <mat-form-field appearance="outline">
-              <mat-label>Display Name</mat-label>
-              <input matInput formControlName="display_name" autocomplete="name" />
-              <mat-icon matPrefix>person</mat-icon>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Email</mat-label>
-              <input matInput type="email" formControlName="email" autocomplete="email" />
-              <mat-icon matPrefix>email</mat-icon>
-              @if (registerForm.get('email')?.hasError('email')) {
-                <mat-error>Enter a valid email address</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Password</mat-label>
-              <input
-                matInput
-                [type]="hidePassword() ? 'password' : 'text'"
-                formControlName="password"
-                autocomplete="new-password"
-              />
-              <mat-icon matPrefix>lock</mat-icon>
-              <button
-                mat-icon-button
-                matSuffix
-                type="button"
-                (click)="hidePassword.update((v) => !v)"
-              >
-                <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
-              </button>
-              @if (registerForm.get('password')?.hasError('minlength')) {
-                <mat-error>Minimum 8 characters</mat-error>
-              }
-            </mat-form-field>
-
-            <button mat-flat-button type="submit" [disabled]="loading() || registerForm.invalid">
-              @if (loading()) {
-                <mat-spinner diameter="20" />
-              } @else {
-                Create Account
-              }
-            </button>
-          </form>
-        </mat-tab>
-      </mat-tab-group>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 </div>

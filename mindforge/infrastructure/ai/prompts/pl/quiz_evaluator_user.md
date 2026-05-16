@@ -1,8 +1,8 @@
-Question: {question_text}
+Pytanie: {question_text}
 
-Reference answer: {reference_answer}
+Wzorcowa odpowiedź: {reference_answer}
 
-Grounding context:
+Kontekst źródłowy:
 {grounding_context}
 
-Student's answer: {student_answer}
+Odpowiedź ucznia: {student_answer}

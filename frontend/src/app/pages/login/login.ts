@@ -1,74 +1,47 @@
 import { Component, ChangeDetectionStrategy, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MfSnackbarService } from '../../core/services/mf-snackbar.service';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ReactiveFormsModule,
-    MatCardModule, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatDividerModule,
-    MatTabsModule, MatProgressSpinnerModule,
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
 export class LoginComponent {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly fb = inject(FormBuilder);
-  private readonly snack = inject(MatSnackBar);
+  private readonly snackbarService = inject(MfSnackbarService);
 
-  readonly loading = signal(false);
-  readonly hidePassword = signal(true);
+  readonly isLogin = signal(true);
+  readonly email = signal('');
+  readonly password = signal('');
+  readonly isLoading = signal(false);
+  readonly discordEnabled = signal(true);
+  readonly discordOauthUrl = signal('/api/auth/login/discord');
 
-  readonly loginForm = this.fb.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
-  });
+  onSubmit() {
+    if (!this.email() || !this.password()) return;
+    this.isLoading.set(true);
 
-  readonly registerForm = this.fb.nonNullable.group({
-    display_name: ['', [Validators.required, Validators.minLength(1)]],
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
-  });
+    const action = this.isLogin()
+      ? this.auth.login({ email: this.email(), password: this.password() })
+      : this.auth.register({
+          email: this.email(),
+          password: this.password(),
+          display_name: this.email().split('@')[0],
+        });
 
-  loginWithDiscord() {
-    this.auth.loginWithProvider('discord');
-  }
-
-  submitLogin() {
-    if (this.loginForm.invalid) return;
-    this.loading.set(true);
-    this.auth.login(this.loginForm.getRawValue()).subscribe({
+    action.subscribe({
       next: () => this.router.navigate(['/dashboard']),
       error: (err: Error) => {
-        this.snack.open(err.message, 'Close', { duration: 4000 });
-        this.loading.set(false);
-      },
-    });
-  }
-
-  submitRegister() {
-    if (this.registerForm.invalid) return;
-    this.loading.set(true);
-    this.auth.register(this.registerForm.getRawValue()).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
-      error: (err: Error) => {
-        this.snack.open(err.message, 'Close', { duration: 4000 });
-        this.loading.set(false);
+        this.snackbarService.show(err.message, 'error');
+        this.isLoading.set(false);
       },
     });
   }

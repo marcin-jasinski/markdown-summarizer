@@ -1,0 +1,20 @@
+:host {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--mf-surface-3) 25%,
+    var(--mf-border) 50%,
+    var(--mf-surface-3) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: var(--mf-radius-sm);
+
+  &.mf-skeleton-circle { border-radius: 50%; }
+  &.mf-skeleton-text { border-radius: var(--mf-radius-sm); height: 1em; }
+}
+
+@keyframes skeleton-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}

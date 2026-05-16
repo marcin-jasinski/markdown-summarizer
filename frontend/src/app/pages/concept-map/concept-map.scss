@@ -1,53 +1,171 @@
-:host {
+.mf-cmap-page {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px);
-  overflow: hidden;
+  height: calc(100vh - var(--mf-toolbar-height));
 }
 
-.concept-map-page {
+.mf-cmap-header {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--mf-border);
+  background: var(--mf-surface-1);
+}
+
+.mf-cmap-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--mf-text-primary);
+  margin: 0;
+}
+
+.mf-cmap-kb-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--mf-primary-subtle);
+  color: var(--mf-primary);
+  border-radius: var(--mf-radius-full);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.mf-cmap-layout {
   flex: 1;
-  height: 100%;
+  display: flex;
+  overflow: hidden;
+  position: relative;
 }
 
-.map-toolbar {
+.mf-cmap-graph {
+  flex: 1;
+  background: var(--mf-surface-2);
+  position: relative;
+}
+
+.mf-cmap-controls {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+}
+
+.mf-cmap-ctrl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--mf-surface-1);
+  border: 1px solid var(--mf-border);
+  border-radius: var(--mf-radius-sm);
+  color: var(--mf-text-secondary);
+  cursor: pointer;
+  box-shadow: var(--mf-shadow-sm);
+  transition: background-color var(--mf-transition-fast), color var(--mf-transition-fast);
+
+  &:hover {
+    background: var(--mf-surface-3);
+    color: var(--mf-text-primary);
+  }
+}
+.mf-cmap-no-edges {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--mf-surface-2);
+  border: 1px solid var(--mf-border);
+  border-radius: var(--mf-radius-md);
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--mf-text-tertiary);
+  pointer-events: none;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.mf-cmap-panel {
+  width: 300px;
+  background: var(--mf-surface-1);
+  border-left: 1px solid var(--mf-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slide-in-panel 0.2s ease-out;
+}
+
+@keyframes slide-in-panel {
+  from { transform: translateX(300px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.mf-cmap-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
-  background: var(--mat-sys-surface-container);
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
-
-  .map-stats {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--mat-sys-on-surface-variant);
-    font-size: 14px;
-  }
-
-  .map-actions {
-    display: flex;
-    gap: 4px;
-  }
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--mf-border);
 }
 
-.cytoscape-container {
-  flex: 1;
-  background: var(--mat-sys-surface);
+.mf-cmap-panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--mf-text-primary);
+  margin: 0;
 }
 
-.loading-overlay {
-  position: absolute;
-  inset: 0;
+.mf-cmap-close {
+  background: none;
+  border: none;
+  color: var(--mf-text-secondary);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  &:hover { color: var(--mf-text-primary); }
+}
+
+.mf-cmap-panel-body {
+  padding: 20px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  background: rgba(0,0,0,.5);
-  z-index: 10;
-  color: white;
+  gap: 12px;
 }
+
+.mf-cmap-panel-desc { font-size: 14px; color: var(--mf-text-primary); line-height: 1.6; margin: 0; }
+
+.mf-cmap-chip {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--mf-primary-subtle);
+  color: var(--mf-primary);
+  border-radius: var(--mf-radius-full);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.mf-cmap-relations { display: flex; flex-direction: column; gap: 8px; }
+
+.mf-cmap-relations-title { font-size: 12px; font-weight: 600; color: var(--mf-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin: 0; }
+
+.mf-cmap-relation {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--mf-surface-2);
+  border-radius: var(--mf-radius-sm);
+  font-size: 13px;
+}
+
+.mf-cmap-rel-type {
+  color: var(--mf-text-tertiary);
+  font-style: italic;
+}
+
+.mf-cmap-rel-target { color: var(--mf-text-primary); font-weight: 500; }

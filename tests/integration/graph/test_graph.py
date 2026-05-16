@@ -359,6 +359,25 @@ class TestConceptNeighborhoodRetrieval:
         assert "neural_network" in keys
         assert "backprop" in keys
 
+    async def test_get_concept_edges_returns_relates_to(self, neo4j_ctx):
+        """Regression: concept map needs RELATES_TO edges exposed via the port."""
+        from mindforge.infrastructure.graph.neo4j_indexer import Neo4jGraphIndexer
+        from mindforge.infrastructure.graph.neo4j_retrieval import (
+            Neo4jRetrievalAdapter,
+        )
+
+        artifact = _make_artifact()
+        indexer = Neo4jGraphIndexer(neo4j_ctx)
+        await indexer.index_artifact(artifact)
+
+        retrieval = Neo4jRetrievalAdapter(neo4j_ctx)
+        edges = await retrieval.get_concept_edges(artifact.knowledge_base_id)
+
+        # At least one edge between the two concepts in _make_artifact, deduplicated.
+        assert edges, "expected at least one RELATES_TO edge"
+        pair = {tuple(sorted((e.source, e.target))) for e in edges}
+        assert ("backprop", "neural_network") in pair
+
 
 # ---------------------------------------------------------------------------
 # 7.7.4 — Weak concept detection (smoke test — no REVIEWED edges in test DB)

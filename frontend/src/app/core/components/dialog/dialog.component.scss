@@ -1,0 +1,51 @@
+:host {
+  display: block;
+  background: var(--mf-surface-1);
+  border-radius: var(--mf-radius-lg);
+  box-shadow: var(--mf-shadow-lg);
+  max-width: 480px;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.mf-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 0;
+}
+
+.mf-dialog-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--mf-text-primary);
+}
+
+.mf-dialog-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--mf-text-secondary);
+  padding: 4px;
+  border-radius: var(--mf-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:hover { background: var(--mf-surface-3); color: var(--mf-text-primary); }
+}
+
+.mf-dialog-content {
+  padding: 16px 24px;
+  overflow-y: auto;
+  max-height: 60vh;
+  color: var(--mf-text-primary);
+}
+
+.mf-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 24px 20px;
+}

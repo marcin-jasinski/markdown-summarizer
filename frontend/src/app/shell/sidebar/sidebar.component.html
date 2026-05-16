@@ -1,0 +1,53 @@
+<nav
+  class="mf-sidebar"
+  [class.mf-sidebar-collapsed]="sidebarCollapsed()"
+  [class.mf-sidebar-mobile-open]="isMobile() && !sidebarCollapsed()"
+>
+  <div class="mf-sidebar-header">
+    <button class="mf-sidebar-toggle" (click)="collapseToggle()" aria-label="Przełącz sidebar">
+      <lucide-icon
+        [name]="sidebarCollapsed() ? 'chevrons-right' : 'chevrons-left'"
+        [size]="16"
+      ></lucide-icon>
+    </button>
+  </div>
+
+  <div class="mf-sidebar-nav">
+    @for (item of navItems(); track item.route + item.label) {
+      @if (item.isSeparator) {
+        <div class="mf-nav-separator"></div>
+      } @else {
+        <a
+          class="mf-nav-item"
+          [class.mf-nav-item-active]="isActive(item.route)"
+          [class.mf-nav-item-back]="item.isBack"
+          [routerLink]="item.route"
+        >
+          <lucide-icon [name]="item.icon" [size]="18"></lucide-icon>
+          @if (!sidebarCollapsed()) {
+            <span class="mf-nav-label">{{ item.label }}</span>
+          }
+        </a>
+      }
+    }
+  </div>
+
+  <div class="mf-sidebar-footer">
+    @if (!statsLoading()) {
+      @if (!sidebarCollapsed()) {
+        <div class="mf-sidebar-stats">
+          <span class="mf-stat-streak">🔥 {{ stats()?.streak_days ?? '—' }} dni</span>
+          <span class="mf-stat-due">📚 {{ stats()?.due_today ?? '—' }} dziś</span>
+        </div>
+      } @else {
+        <div class="mf-sidebar-stats-collapsed">
+          <span title="Seria">🔥</span>
+        </div>
+      }
+    }
+  </div>
+
+  @if (isMobile() && !sidebarCollapsed()) {
+    <div class="mf-sidebar-backdrop" (click)="collapseToggle()"></div>
+  }
+</nav>

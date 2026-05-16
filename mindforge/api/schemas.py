@@ -18,7 +18,6 @@ from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
-
 # ---------------------------------------------------------------------------
 # Auth schemas
 # ---------------------------------------------------------------------------
@@ -349,3 +348,13 @@ class LessonResponse(BaseModel):
     flashcard_count: int
     concept_count: int
     last_processed_at: datetime | None = None
+
+
+# ---------------------------------------------------------------------------
+# User stats schemas
+# ---------------------------------------------------------------------------
+
+
+class UserStatsResponse(BaseModel):
+    streak_days: int = 0
+    due_today: int = 0

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { UserStatsResponse } from '../models/api.models';
 
 /** Base HTTP client. All HTTP integration in MindForge flows through this service. */
 @Injectable({ providedIn: 'root' })
@@ -30,6 +31,10 @@ export class ApiService {
 
   uploadFile<T>(path: string, formData: FormData): Observable<T> {
     return this.http.post<T>(path, formData).pipe(catchError(this.handleError));
+  }
+
+  getMyStats(): Observable<UserStatsResponse> {
+    return this.http.get<UserStatsResponse>('/api/v1/users/me/stats');
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

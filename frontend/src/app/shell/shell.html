@@ -1,120 +1,17 @@
-<mat-sidenav-container class="shell-container">
-  <mat-sidenav
-    #sidenav
-    [mode]="isMobile() ? 'over' : 'side'"
-    [opened]="sidenavOpen()"
-    class="sidenav"
-  >
-    <!-- Logo -->
-    <div class="sidenav-logo">
-      <mat-icon class="logo-icon">psychology</mat-icon>
-      <span class="logo-text">MindForge</span>
-    </div>
-
-    <mat-divider />
-
-    <!-- Global navigation -->
-    <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="nav-active">
-        <mat-icon matListItemIcon>dashboard</mat-icon>
-        <span matListItemTitle>Dashboard</span>
-      </a>
-      <a mat-list-item routerLink="/knowledge-bases" routerLinkActive="nav-active">
-        <mat-icon matListItemIcon>library_books</mat-icon>
-        <span matListItemTitle>Knowledge Bases</span>
-      </a>
-    </mat-nav-list>
-
-    <!-- KB-contextual navigation -->
-    @if (currentKbId()) {
-      <mat-divider />
-      <p class="sidenav-section-label">Current KB</p>
-      <mat-nav-list>
-        <a
-          mat-list-item
-          [routerLink]="['/kb', currentKbId(), 'documents']"
-          routerLinkActive="nav-active"
-        >
-          <mat-icon matListItemIcon>description</mat-icon>
-          <span matListItemTitle>Documents</span>
-        </a>
-        <a
-          mat-list-item
-          [routerLink]="['/kb', currentKbId(), 'concepts']"
-          routerLinkActive="nav-active"
-        >
-          <mat-icon matListItemIcon>hub</mat-icon>
-          <span matListItemTitle>Concept Map</span>
-        </a>
-        <a
-          mat-list-item
-          [routerLink]="['/kb', currentKbId(), 'quiz']"
-          routerLinkActive="nav-active"
-        >
-          <mat-icon matListItemIcon>quiz</mat-icon>
-          <span matListItemTitle>Quiz</span>
-        </a>
-        <a
-          mat-list-item
-          [routerLink]="['/kb', currentKbId(), 'flashcards']"
-          routerLinkActive="nav-active"
-        >
-          <mat-icon matListItemIcon>style</mat-icon>
-          <span matListItemTitle>Flashcards</span>
-        </a>
-        <a
-          mat-list-item
-          [routerLink]="['/kb', currentKbId(), 'search']"
-          routerLinkActive="nav-active"
-        >
-          <mat-icon matListItemIcon>search</mat-icon>
-          <span matListItemTitle>Search</span>
-        </a>
-        <a
-          mat-list-item
-          [routerLink]="['/kb', currentKbId(), 'chat']"
-          routerLinkActive="nav-active"
-        >
-          <mat-icon matListItemIcon>chat</mat-icon>
-          <span matListItemTitle>Chat</span>
-        </a>
-      </mat-nav-list>
-    }
-
-    <div class="sidenav-spacer"></div>
-
-    <!-- User footer -->
-    <mat-divider />
-    <div class="sidenav-user" [matMenuTriggerFor]="userMenu">
-      <mat-icon>account_circle</mat-icon>
-      <span class="user-name">{{ auth.user()?.display_name }}</span>
-    </div>
-    <mat-menu #userMenu="matMenu">
-      <div mat-menu-item disabled class="user-email">{{ auth.user()?.email }}</div>
-      <mat-divider />
-      <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Logout</button>
-    </mat-menu>
-  </mat-sidenav>
-
-  <mat-sidenav-content>
-    <mat-toolbar class="main-toolbar">
-      <button mat-icon-button (click)="toggleSidenav()" aria-label="Toggle navigation">
-        <mat-icon>menu</mat-icon>
-      </button>
-      <span class="toolbar-title">MindForge</span>
-      <span class="flex-spacer"></span>
-      <button mat-icon-button [matMenuTriggerFor]="topUserMenu" aria-label="User menu">
-        <mat-icon>account_circle</mat-icon>
-      </button>
-      <mat-menu #topUserMenu="matMenu">
-        <div mat-menu-item disabled>{{ auth.user()?.display_name }}</div>
-        <mat-divider />
-        <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon> Logout</button>
-      </mat-menu>
-    </mat-toolbar>
-
-    <main class="main-content">
-      <router-outlet />
+<div class="mf-shell">
+  <app-toolbar
+    [sidebarCollapsed]="sidebarCollapsed()"
+    [userDisplayName]="userName()"
+    (sidebarToggle)="onSidebarToggle()"
+  ></app-toolbar>
+  <div class="mf-shell-body">
+    <app-sidebar
+      [isMobile]="isMobile()"
+      [currentKbId]="currentKbId()"
+      (toggle)="onSidebarToggle()"
+    ></app-sidebar>
+    <main class="mf-shell-main">
+      <router-outlet></router-outlet>
     </main>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+  </div>
+</div>

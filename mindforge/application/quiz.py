@@ -15,6 +15,7 @@ Architecture:
 
 from __future__ import annotations
 
+import dataclasses
 import hashlib
 import logging
 from dataclasses import dataclass
@@ -162,6 +163,8 @@ class QuizService:
         user_id: UUID,
         kb_id: UUID,
         topic: str | None = None,
+        *,
+        prompt_locale: str | None = None,
     ) -> QuizStartResult:
         """Start a new quiz session targeting the user's weakest concepts.
 
@@ -210,13 +213,18 @@ class QuizService:
         # Step 4: generate question via QuizGeneratorAgent
         session_id = uuid4()
         dummy_artifact = _make_dummy_artifact(kb_id, target.key)
+        agent_settings = (
+            dataclasses.replace(self._settings, prompt_locale=prompt_locale)
+            if prompt_locale
+            else self._settings
+        )
         ctx = AgentContext(
             document_id=dummy_artifact.document_id,
             knowledge_base_id=kb_id,
             artifact=dummy_artifact,
             gateway=self._gateway,
             retrieval=self._retrieval,
-            settings=self._settings,
+            settings=agent_settings,
             tracer=None,
             metadata={
                 "concept_label": target.label,
@@ -292,6 +300,8 @@ class QuizService:
         session_id: UUID,
         question_id: str,
         user_answer: str,
+        *,
+        prompt_locale: str | None = None,
     ) -> QuizEvalResult:
         """Evaluate a user answer server-side.
 
@@ -338,13 +348,18 @@ class QuizService:
 
         # Step 4: evaluate via QuizEvaluatorAgent (reuses stored reference_answer)
         dummy_artifact = _make_dummy_artifact(kb_id, question.lesson_id)
+        agent_settings = (
+            dataclasses.replace(self._settings, prompt_locale=prompt_locale)
+            if prompt_locale
+            else self._settings
+        )
         ctx = AgentContext(
             document_id=dummy_artifact.document_id,
             knowledge_base_id=kb_id,
             artifact=dummy_artifact,
             gateway=self._gateway,
             retrieval=self._retrieval,
-            settings=self._settings,
+            settings=agent_settings,
             tracer=None,
             metadata={
                 "question_text": question.question_text,

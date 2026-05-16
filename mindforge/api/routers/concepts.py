@@ -34,30 +34,33 @@ async def get_concepts(
         return ConceptGraphResponse(concepts=[], edges=[])
 
     nodes = await retrieval.get_concepts(kb_id)
+    raw_edges = await retrieval.get_concept_edges(kb_id)
+
+    valid_keys = {n.key for n in nodes}
+    related_map: dict[str, set[str]] = {n.key: set() for n in nodes}
+
+    edges: list[ConceptEdgeResponse] = []
+    for e in raw_edges:
+        if e.source not in valid_keys or e.target not in valid_keys:
+            continue
+        edges.append(
+            ConceptEdgeResponse(
+                source=e.source,
+                target=e.target,
+                relation=e.relation,
+            )
+        )
+        related_map[e.source].add(e.target)
+        related_map[e.target].add(e.source)
+
     concept_responses = [
         ConceptNodeResponse(
             key=n.key,
             label=n.label,
             description=n.description,
-            related=n.related,
+            related=sorted(related_map.get(n.key, set())),
         )
         for n in nodes
     ]
-
-    # Build edges from neighbor relationships
-    edges: list[ConceptEdgeResponse] = []
-    seen: set[tuple[str, str]] = set()
-    for node in nodes:
-        for related_key in node.related:
-            edge_key = (min(node.key, related_key), max(node.key, related_key))
-            if edge_key not in seen:
-                seen.add(edge_key)
-                edges.append(
-                    ConceptEdgeResponse(
-                        source=node.key,
-                        target=related_key,
-                        relation="related_to",
-                    )
-                )
 
     return ConceptGraphResponse(concepts=concept_responses, edges=edges)

@@ -9,15 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MfSnackbarService } from '../../core/services/mf-snackbar.service';
 import { ChatService } from '../../core/services/chat.service';
 
 interface ChatMessage {
@@ -30,28 +22,26 @@ interface ChatMessage {
   selector: 'app-chat',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    FormsModule,
-    MatCardModule, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatProgressSpinnerModule,
-    MatChipsModule,
-  ],
+  imports: [],
   templateUrl: './chat.html',
   styleUrl: './chat.scss',
 })
 export class ChatComponent implements OnInit, AfterViewChecked {
-  @ViewChild('messageList') messageList!: ElementRef<HTMLDivElement>;
+  @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
 
   private readonly route = inject(ActivatedRoute);
   private readonly chatService = inject(ChatService);
-  private readonly snack = inject(MatSnackBar);
+  private readonly snackbarService = inject(MfSnackbarService);
 
   readonly kbId = signal('');
+  readonly kbName = signal<string | null>(null);
   readonly sessionId = signal<string | null>(null);
   readonly messages = signal<ChatMessage[]>([]);
   readonly inputText = signal('');
   readonly sending = signal(false);
   readonly starting = signal(false);
+
+  get isLoading() { return this.sending; }
 
   private shouldScrollToBottom = false;
 
@@ -71,11 +61,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     this.starting.set(true);
     this.chatService.startSession(this.kbId()).subscribe({
       next: session => { this.sessionId.set(session.session_id); this.starting.set(false); },
-      error: (err: Error) => { this.snack.open(err.message, 'Close', { duration: 4000 }); this.starting.set(false); },
+      error: (err: Error) => { this.snackbarService.show(err.message, 'error'); this.starting.set(false); },
     });
   }
 
-  send() {
+  onSend() {
     const text = this.inputText().trim();
     const sid = this.sessionId();
     if (!text || !sid || this.sending()) return;
@@ -95,22 +85,26 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.shouldScrollToBottom = true;
       },
       error: (err: Error) => {
-        this.snack.open(err.message, 'Close', { duration: 4000 });
+        this.snackbarService.show(err.message, 'error');
         this.sending.set(false);
       },
     });
   }
 
-  onKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && !event.shiftKey) {
+  onEnterKey(event: Event): void {
+    if (!(event as KeyboardEvent).shiftKey) {
       event.preventDefault();
-      this.send();
+      this.onSend();
     }
+  }
+
+  formatMessage(content: string): string {
+    return content.replace(/\n/g, '<br>');
   }
 
   private scrollToBottom() {
     try {
-      const el = this.messageList?.nativeElement;
+      const el = this.messagesContainer?.nativeElement;
       if (el) el.scrollTop = el.scrollHeight;
     } catch { /* noop */ }
   }

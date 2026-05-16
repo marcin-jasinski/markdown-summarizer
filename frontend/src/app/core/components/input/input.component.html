@@ -1,0 +1,25 @@
+@if (label()) {
+  <label class="mf-input-label">{{ label() }}</label>
+}
+<div
+  class="mf-input-wrapper"
+  [class.mf-input-error]="!!error()"
+  [class.mf-input-disabled]="disabled()"
+>
+  <ng-content select="[slot=iconLeft]" />
+  <input
+    class="mf-input-field"
+    [type]="type()"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    [value]="value()"
+    (input)="value.set($any($event.target).value)"
+  />
+  <ng-content select="[slot=iconRight]" />
+</div>
+@if (error()) {
+  <span class="mf-input-error-text">{{ error() }}</span>
+}
+@if (helperText() && !error()) {
+  <span class="mf-input-helper">{{ helperText() }}</span>
+}

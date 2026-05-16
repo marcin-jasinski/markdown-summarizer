@@ -6,15 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatDividerModule } from '@angular/material/divider';
+import { MfSnackbarService } from '../../core/services/mf-snackbar.service';
 import { SearchService } from '../../core/services/search.service';
 import type { SearchResultItem } from '../../core/models/api.models';
 
@@ -22,43 +14,38 @@ import type { SearchResultItem } from '../../core/models/api.models';
   selector: 'app-search',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    FormsModule,
-    MatCardModule, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatProgressSpinnerModule,
-    MatChipsModule, MatDividerModule,
-  ],
+  imports: [],
   templateUrl: './search.html',
   styleUrl: './search.scss',
 })
 export class SearchComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly searchService = inject(SearchService);
+  private readonly snackbarService = inject(MfSnackbarService);
 
   readonly kbId = signal('');
   readonly query = signal('');
   readonly results = signal<SearchResultItem[]>([]);
-  readonly searched = signal(false);
-  readonly loading = signal(false);
+  readonly isLoading = signal(false);
+  readonly activeFilters = signal<string[]>([]);
+  readonly hasSearched = signal(false);
 
   ngOnInit() {
     this.kbId.set(this.route.snapshot.paramMap.get('kbId') ?? '');
   }
 
   search() {
-    if (!this.query().trim()) return;
-    this.loading.set(true);
-    this.searchService.search(this.kbId(), { query: this.query(), top_k: 8 }).subscribe({
-      next: res => { this.results.set(res.results); this.loading.set(false); this.searched.set(true); },
-      error: () => this.loading.set(false),
+    const q = this.query().trim();
+    if (!q) return;
+    this.isLoading.set(true);
+    this.hasSearched.set(true);
+    this.searchService.search(this.kbId(), { query: q, top_k: 10 }).subscribe({
+      next: resp => { this.results.set(resp.results); this.isLoading.set(false); },
+      error: (err: Error) => { this.snackbarService.show(err.message, 'error'); this.isLoading.set(false); },
     });
   }
 
-  onKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter') this.search();
-  }
-
-  scorePercent(score: number): number {
-    return Math.round(score * 100);
+  removeFilter(filter: string) {
+    this.activeFilters.update(filters => filters.filter(f => f !== filter));
   }
 }

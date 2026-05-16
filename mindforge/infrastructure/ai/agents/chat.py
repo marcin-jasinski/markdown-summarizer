@@ -7,7 +7,7 @@ at import time.  To change a prompt, edit the corresponding markdown file.
 
 from mindforge.infrastructure.ai.prompts import load_prompt
 
-_BASE_VERSION = "1.0.0"
+_BASE_VERSION = "1.1.0"
 
 VERSION = f"{_BASE_VERSION}+pl"
 

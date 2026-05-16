@@ -1,68 +1,79 @@
-<div class="page-container flashcards-page">
+<div class="mf-flash-page">
   @if (loading()) {
-    <mat-progress-bar mode="indeterminate" />
+    <div class="mf-flash-loading">
+      <div class="mf-flash-skeleton"></div>
+    </div>
   }
 
-  @if (!loading() && done() && cards().length === 0) {
-    <div class="all-done">
-      <mat-icon>celebration</mat-icon>
-      <h2>All caught up!</h2>
-      <p>No cards are due for review right now.</p>
-      <button mat-flat-button (click)="loadDueCards()">Refresh</button>
+  @if (!loading() && errorMessage()) {
+    <div class="mf-flash-done">
+      <div class="mf-flash-done-icon">⚠️</div>
+      <h2 class="mf-flash-done-title">Błąd ładowania fiszek</h2>
+      <p class="mf-flash-done-text">{{ errorMessage() }}</p>
+      <button class="mf-btn-primary" (click)="loadDueCards()">Spróbuj ponownie</button>
+    </div>
+  }
+
+  @if (!loading() && !errorMessage() && done() && cards().length === 0) {
+    <div class="mf-flash-done">
+      <div class="mf-flash-done-icon">🎉</div>
+      <h2 class="mf-flash-done-title">Wszystko gotowe!</h2>
+      <p class="mf-flash-done-text">Brak kart do powtórki w tej chwili.</p>
+      <button class="mf-btn-primary" (click)="loadDueCards()">Odśwież</button>
     </div>
   }
 
   @if (!loading() && done() && cards().length > 0) {
-    <div class="all-done">
-      <mat-icon>check_circle</mat-icon>
-      <h2>Session complete!</h2>
-      <p>You reviewed all {{ cards().length }} cards.</p>
-      <button mat-flat-button (click)="loadDueCards()">New Session</button>
+    <div class="mf-flash-done">
+      <div class="mf-flash-done-icon">✅</div>
+      <h2 class="mf-flash-done-title">Sesja zakończona!</h2>
+      <p class="mf-flash-done-text">Powtórzyłeś wszystkie {{ cards().length }} karty.</p>
+      <button class="mf-btn-primary" (click)="loadDueCards()">Nowa sesja</button>
     </div>
   }
 
   @if (!loading() && !done() && currentCard()) {
     <!-- Progress -->
-    <div class="progress-row">
-      <span>{{ currentIndex() + 1 }} / {{ cards().length }}</span>
-      <mat-progress-bar mode="determinate" [value]="progress()" />
+    <div class="mf-flash-header">
+      <span class="mf-flash-progress-text"
+        >Karta {{ currentIndex() + 1 }} / {{ cards().length }}</span
+      >
+      <div class="mf-flash-progress-bar">
+        <div class="mf-flash-progress-fill" [style.width.%]="progressPct()"></div>
+      </div>
     </div>
 
     <!-- Flip card -->
     <div class="flashcard-scene" (click)="flip()">
       <div class="flashcard-inner" [class.flipped]="flipped()">
         <!-- Front -->
-        <mat-card class="flashcard-face flashcard-front">
-          <mat-card-content>
-            <div class="card-label">Question</div>
-            <p class="card-text">{{ currentCard()!.front }}</p>
-            <div class="flip-hint">Tap to reveal answer</div>
-          </mat-card-content>
-        </mat-card>
+        <div class="flashcard-face flashcard-front">
+          <div class="card-label">Pytanie</div>
+          <p class="card-text">{{ currentCard()!.front }}</p>
+          <div class="flip-hint">Kliknij, aby zobaczyć odpowiedź</div>
+        </div>
 
         <!-- Back -->
-        <mat-card class="flashcard-face flashcard-back">
-          <mat-card-content>
-            <div class="card-label">Answer</div>
-            <p class="card-text">{{ currentCard()!.back }}</p>
-          </mat-card-content>
-        </mat-card>
+        <div class="flashcard-face flashcard-back">
+          <div class="card-label">Odpowiedź</div>
+          <p class="card-text">{{ currentCard()!.back }}</p>
+        </div>
       </div>
     </div>
 
     <!-- Rating buttons (only shown after flip) -->
     @if (flipped()) {
-      <div class="rating-row">
-        <p class="rating-prompt">How well did you know this?</p>
-        <div class="rating-buttons">
-          <button mat-stroked-button class="btn-again" (click)="rate(0)">Again</button>
-          <button mat-stroked-button class="btn-hard" (click)="rate(2)">Hard</button>
-          <button mat-stroked-button class="btn-good" (click)="rate(3)">Good</button>
-          <button mat-stroked-button class="btn-easy" (click)="rate(5)">Easy</button>
+      <div class="mf-rating-row">
+        <p class="mf-rating-prompt">Jak dobrze znałeś tę odpowiedź?</p>
+        <div class="mf-rating-buttons">
+          <button class="mf-rate-btn mf-rate-again" (click)="rate(0)">Znowu</button>
+          <button class="mf-rate-btn mf-rate-hard" (click)="rate(2)">Trudna</button>
+          <button class="mf-rate-btn mf-rate-good" (click)="rate(3)">Dobra</button>
+          <button class="mf-rate-btn mf-rate-easy" (click)="rate(5)">Łatwa</button>
         </div>
       </div>
     } @else {
-      <p class="flip-cta">Click the card to reveal the answer</p>
+      <p class="mf-flip-cta">Kliknij kartę, aby zobaczyć odpowiedź</p>
     }
   }
 </div>

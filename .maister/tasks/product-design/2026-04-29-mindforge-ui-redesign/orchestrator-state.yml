@@ -1,0 +1,52 @@
+orchestrator:
+  started_phase: "phase-0"
+  completed_phases: []
+  failed_phases: []
+
+  auto_fix_attempts: {}
+
+  options:
+    visual_enabled: true
+
+  created: "2026-04-29T00:00:00Z"
+  updated: "2026-04-29T01:00:00Z"
+  task_path: ".maister/tasks/product-design/2026-04-29-mindforge-ui-redesign"
+
+  task_ids: {}
+
+task:
+  title: "MindForge GUI Redesign — Modern, Beautiful UI"
+  description: >
+    Redesign the entire GUI of MindForge to be modern, visually appealing, and beautiful.
+    Current UI is described as 'heavy', not modern or sleek. Target: light colours, modern
+    design and layout, visually striking aesthetic across all screens.
+  status: "in_progress"
+  tags: ["ui", "ux", "redesign", "design-system", "frontend"]
+  priority: "high"
+
+design_context:
+  design_characteristics:
+    is_greenfield: false
+    is_enhancement: true
+    is_ui_focused: true
+    is_backend: false
+    is_complex: true
+    is_simple: false
+  complexity_level: "complex"
+  collected_urls: []
+  research_topics:
+    - "modern learning and tutoring SaaS UI in 2026"
+    - "best design systems for modern web applications"
+  user_files_list: []
+  visual_companion:
+    available: null
+    port: null
+
+phase_summaries: {}
+
+refinement_iterations:
+  phase_2: 0
+  phase_3: 0
+  phase_5: 0
+  phase_6_sections: {}
+  phase_7: 0

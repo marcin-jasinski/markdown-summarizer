@@ -260,6 +260,13 @@ RETURN c.key AS key, c.name AS name, c.primary_definition AS description
 ORDER BY c.name
 """
 
+GET_CONCEPT_EDGES = """
+MATCH (a:Concept)-[r:RELATES_TO]->(b:Concept)
+WHERE a.kb_id = $kb_id AND b.kb_id = $kb_id
+RETURN a.key AS source, b.key AS target,
+       coalesce(r.relation, 'related_to') AS relation
+"""
+
 # ---------------------------------------------------------------------------
 # Weak concept detection — Quiz Question Selection query
 # ---------------------------------------------------------------------------

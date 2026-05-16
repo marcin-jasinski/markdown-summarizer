@@ -10,7 +10,7 @@ Version-tagged — changing prompt files must be reflected in the agent's
 
 from mindforge.infrastructure.ai.prompts import load_prompt
 
-_BASE_VERSION = "1.0.0"
+_BASE_VERSION = "1.1.0"
 
 VERSION = f"{_BASE_VERSION}+pl"
 

@@ -37,6 +37,7 @@ from mindforge.domain.models import (
     ContentHash,
     ConceptNeighborhood,
     ConceptNode,
+    ConceptEdge,
     DeadlineProfile,
     Document,
     DocumentArtifact,
@@ -200,6 +201,8 @@ class RetrievalPort(Protocol):
     ) -> list[WeakConcept]: ...
 
     async def get_concepts(self, kb_id: UUID) -> list[ConceptNode]: ...
+
+    async def get_concept_edges(self, kb_id: UUID) -> list[ConceptEdge]: ...
 
     async def get_lesson_concepts(
         self, kb_id: UUID, lesson_id: str
