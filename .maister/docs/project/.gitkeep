@@ -1,0 +1,9 @@
+# Project Documentation
+
+This directory contains project-level documentation generated during initialization.
+
+Files to be created here:
+- `vision.md` — project vision and goals
+- `roadmap.md` — development roadmap
+- `tech-stack.md` — technology choices and rationale
+- `architecture.md` — system architecture overview

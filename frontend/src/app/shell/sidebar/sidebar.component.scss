@@ -1,0 +1,113 @@
+.mf-sidebar {
+  width: var(--mf-sidebar-width);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--mf-surface-3);
+  border-right: 1px solid var(--mf-border);
+  transition: width var(--mf-transition-normal);
+  overflow: hidden;
+  flex-shrink: 0;
+
+  &.mf-sidebar-collapsed {
+    width: var(--mf-sidebar-collapsed);
+  }
+}
+
+.mf-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 8px 12px;
+  height: 48px;
+  border-bottom: 1px solid var(--mf-border);
+}
+
+.mf-sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: var(--mf-radius-sm);
+  color: var(--mf-text-tertiary);
+  cursor: pointer;
+  &:hover { background: var(--mf-border); color: var(--mf-text-primary); }
+}
+
+.mf-sidebar-nav {
+  flex: 1;
+  padding: 8px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mf-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--mf-radius-md);
+  color: var(--mf-text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color var(--mf-transition-fast), color var(--mf-transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+
+  &:hover { background: var(--mf-surface-2); color: var(--mf-text-primary); }
+
+  &.mf-nav-item-active {
+    background: var(--mf-primary-subtle);
+    color: var(--mf-primary);
+  }
+}
+
+.mf-nav-label { overflow: hidden; text-overflow: ellipsis; }
+
+.mf-nav-item-back {
+  color: var(--mf-text-tertiary);
+  font-weight: 600;
+  font-size: 13px;
+
+  &:hover {
+    color: var(--mf-primary);
+    background: var(--mf-primary-subtle);
+  }
+}
+
+.mf-nav-separator {
+  height: 1px;
+  background: var(--mf-border);
+  margin: 6px 4px;
+}
+
+.mf-sidebar-footer {
+  padding: 12px;
+  border-top: 1px solid var(--mf-border);
+}
+
+.mf-sidebar-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--mf-text-secondary);
+}
+
+.mf-stat-streak { color: var(--mf-streak-color); font-weight: 600; }
+
+.mf-sidebar-stats-collapsed { text-align: center; font-size: 18px; }
+
+.mf-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
+}

@@ -1,0 +1,23 @@
+:host {
+  display: block;
+  background: var(--mf-surface-1);
+  border-radius: var(--mf-radius-lg);
+  box-shadow: var(--mf-shadow-md);
+  border: 1px solid var(--mf-border);
+
+  &.mf-card-pad-sm { padding: 12px; }
+  &.mf-card-pad-md { padding: 16px; }
+  &.mf-card-pad-lg { padding: 24px; }
+
+  &.mf-card-elevated { box-shadow: var(--mf-shadow-lg); }
+  &.mf-card-flat { box-shadow: none; border: 1px solid var(--mf-border); }
+
+  &.mf-card-hoverable {
+    transition: box-shadow var(--mf-transition-normal), transform var(--mf-transition-normal);
+    cursor: pointer;
+    &:hover {
+      box-shadow: var(--mf-shadow-card-hover);
+      transform: translateY(-2px);
+    }
+  }
+}

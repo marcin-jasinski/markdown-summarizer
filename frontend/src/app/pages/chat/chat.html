@@ -1,0 +1,54 @@
+<div class="mf-chat-page">
+  <div class="mf-chat-header">
+    <h1 class="mf-chat-title">Chat</h1>
+    @if (kbName()) {
+      <span class="mf-chat-kb-badge">{{ kbName() }}</span>
+    }
+  </div>
+
+  <div class="mf-chat-messages" #messagesContainer>
+    @if (messages().length === 0) {
+      <div class="mf-chat-empty">
+        <div class="mf-chat-empty-icon">💬</div>
+        <p class="mf-chat-empty-text">Zadaj pytanie dotyczące tej bazy wiedzy</p>
+      </div>
+    }
+    @for (msg of messages(); track $index) {
+      <div class="mf-chat-bubble-wrap" [class.mf-bubble-wrap-user]="msg.role === 'user'">
+        @if (msg.role === 'user') {
+          <div class="mf-bubble mf-bubble-user">{{ msg.content }}</div>
+        } @else {
+          <div class="mf-bubble mf-bubble-assistant" [innerHTML]="formatMessage(msg.content)"></div>
+        }
+      </div>
+    }
+    @if (isLoading()) {
+      <div class="mf-chat-bubble-wrap">
+        <div class="mf-bubble mf-bubble-assistant mf-bubble-thinking">
+          <span class="mf-thinking-dot"></span>
+          <span class="mf-thinking-dot"></span>
+          <span class="mf-thinking-dot"></span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="mf-chat-input-area">
+    <textarea
+      class="mf-chat-textarea"
+      [value]="inputText()"
+      (input)="inputText.set($any($event.target).value)"
+      (keydown.enter)="onEnterKey($event)"
+      placeholder="Wpisz wiadomość... (Enter = wyślij, Shift+Enter = nowa linia)"
+      rows="1"
+      [disabled]="isLoading()"
+    ></textarea>
+    <button
+      class="mf-chat-send-btn"
+      [disabled]="!inputText().trim() || isLoading()"
+      (click)="onSend()"
+    >
+      ➤
+    </button>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+:host { display: flex; flex-direction: column; gap: 4px; }
+
+.mf-input-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mf-text-secondary);
+}
+
+.mf-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--mf-border);
+  border-radius: var(--mf-radius-md);
+  background: var(--mf-surface-1);
+  transition: border-color var(--mf-transition-fast), box-shadow var(--mf-transition-fast);
+
+  &:focus-within {
+    border-color: var(--mf-primary);
+    box-shadow: 0 0 0 3px rgba(91, 79, 233, 0.15);
+  }
+
+  &.mf-input-error {
+    border-color: var(--mf-incorrect);
+    &:focus-within { box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15); }
+  }
+
+  &.mf-input-disabled {
+    background: var(--mf-surface-3);
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.mf-input-field {
+  flex: 1;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--mf-text-primary);
+  outline: none;
+  &::placeholder { color: var(--mf-text-tertiary); }
+}
+
+.mf-input-error-text {
+  font-size: 12px;
+  color: var(--mf-incorrect);
+}
+
+.mf-input-helper {
+  font-size: 12px;
+  color: var(--mf-text-tertiary);
+}

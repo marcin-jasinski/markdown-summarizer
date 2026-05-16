@@ -1,0 +1,90 @@
+<div class="mf-docs-page">
+  <div class="mf-docs-header">
+    <div>
+      <h1 class="mf-docs-title">Dokumenty</h1>
+      <p class="mf-docs-subtitle">Zarządzaj dokumentami w bazie wiedzy</p>
+    </div>
+    <button class="mf-btn-primary" (click)="openUpload()">+ Prześlij Dokument</button>
+  </div>
+
+  <div
+    class="mf-upload-zone"
+    [class.mf-upload-zone-dragover]="isDragOver()"
+    (dragover)="$event.preventDefault(); isDragOver.set(true)"
+    (dragleave)="isDragOver.set(false)"
+    (drop)="onDrop($event)"
+  >
+    <div class="mf-upload-icon">📄</div>
+    <p class="mf-upload-text">
+      Przeciągnij i upuść pliki lub
+      <button class="mf-link" (click)="openUpload()">wybierz pliki</button>
+    </p>
+    <p class="mf-upload-hint">PDF, DOCX, TXT — do 50MB</p>
+    <input
+      type="file"
+      class="mf-upload-input"
+      #fileInput
+      accept=".pdf,.docx,.txt"
+      multiple
+      (change)="onFileSelect($event)"
+    />
+  </div>
+
+  @if (isLoading()) {
+    <div class="mf-docs-table-wrap">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="mf-docs-skeleton-row"></div>
+      }
+    </div>
+  } @else if (documents().length === 0) {
+    <div class="mf-docs-empty">
+      <p>Brak dokumentów. Prześlij pierwszy dokument, aby zacząć.</p>
+    </div>
+  } @else {
+    <div class="mf-docs-table-wrap">
+      <table class="mf-docs-table">
+        <thead>
+          <tr>
+            <th>Nazwa</th>
+            <th>Format</th>
+            <th>Status</th>
+            <th>Data</th>
+            <th>Akcje</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (doc of documents(); track doc.document_id) {
+            <tr class="mf-docs-row">
+              <td class="mf-docs-name">{{ doc.source_filename }}</td>
+              <td>
+                <span class="mf-chip-sm">{{ doc.mime_type }}</span>
+              </td>
+              <td>
+                <span class="mf-status-chip" [class]="'mf-status-' + doc.status">{{
+                  doc.status
+                }}</span>
+              </td>
+              <td class="mf-docs-date">{{ doc.created_at | date: 'dd.MM.yyyy' }}</td>
+              <td>
+                <button
+                  class="mf-icon-btn"
+                  title="Przetwórz ponownie"
+                  (click)="reprocess(doc.document_id)"
+                >
+                  🔄
+                </button>
+                <button
+                  class="mf-icon-btn mf-icon-btn-danger"
+                  title="Usuń"
+                  (click)="deleteDocument(doc.document_id)"
+                >
+                  🗑
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

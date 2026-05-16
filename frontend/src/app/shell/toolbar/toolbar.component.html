@@ -1,0 +1,39 @@
+<header class="mf-toolbar">
+  <div class="mf-toolbar-left">
+    <button
+      class="mf-toolbar-menu-btn"
+      (click)="onToggleSidebar()"
+      [attr.aria-label]="sidebarCollapsed() ? 'Rozwiń menu' : 'Zwiń menu'"
+    >
+      <lucide-icon
+        [name]="sidebarCollapsed() ? 'panel-left-open' : 'panel-left-close'"
+        [size]="20"
+      ></lucide-icon>
+    </button>
+    <span class="mf-toolbar-brand">MindForge</span>
+  </div>
+  <div class="mf-toolbar-right">
+    <button
+      class="mf-toolbar-icon-btn"
+      (click)="onToggleTheme()"
+      [attr.aria-label]="themeService.isDark() ? 'Tryb jasny' : 'Tryb ciemny'"
+    >
+      @if (themeService.isDark()) {
+        <lucide-icon name="sun" [size]="20"></lucide-icon>
+      } @else {
+        <lucide-icon name="moon" [size]="20"></lucide-icon>
+      }
+    </button>
+    <div class="mf-toolbar-user-wrapper">
+      <button class="mf-toolbar-avatar" (click)="dropdownOpen.update((v) => !v)">
+        {{ getInitials() }}
+      </button>
+      @if (dropdownOpen()) {
+        <div class="mf-toolbar-dropdown" (click)="dropdownOpen.set(false)">
+          <div class="mf-dropdown-name">{{ userDisplayName() }}</div>
+          <button class="mf-dropdown-item" (click)="onLogout()">Wyloguj się</button>
+        </div>
+      }
+    </div>
+  </div>
+</header>
