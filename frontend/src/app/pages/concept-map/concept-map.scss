@@ -40,6 +40,52 @@
 .mf-cmap-graph {
   flex: 1;
   background: var(--mf-surface-2);
+  position: relative;
+}
+
+.mf-cmap-controls {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+}
+
+.mf-cmap-ctrl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--mf-surface-1);
+  border: 1px solid var(--mf-border);
+  border-radius: var(--mf-radius-sm);
+  color: var(--mf-text-secondary);
+  cursor: pointer;
+  box-shadow: var(--mf-shadow-sm);
+  transition: background-color var(--mf-transition-fast), color var(--mf-transition-fast);
+
+  &:hover {
+    background: var(--mf-surface-3);
+    color: var(--mf-text-primary);
+  }
+}
+.mf-cmap-no-edges {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--mf-surface-2);
+  border: 1px solid var(--mf-border);
+  border-radius: var(--mf-radius-md);
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--mf-text-tertiary);
+  pointer-events: none;
+  z-index: 10;
+  white-space: nowrap;
 }
 
 .mf-cmap-panel {

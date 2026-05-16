@@ -7,7 +7,24 @@
   </div>
 
   <div class="mf-cmap-layout">
-    <div class="mf-cmap-graph" #graphContainer></div>
+    <div class="mf-cmap-graph" #graphContainer>
+      <div class="mf-cmap-controls">
+        <button class="mf-cmap-ctrl-btn" (click)="zoomIn()" aria-label="Przybliż">
+          <lucide-icon name="zoom-in" [size]="16"></lucide-icon>
+        </button>
+        <button class="mf-cmap-ctrl-btn" (click)="zoomOut()" aria-label="Oddal">
+          <lucide-icon name="zoom-out" [size]="16"></lucide-icon>
+        </button>
+        <button class="mf-cmap-ctrl-btn" (click)="fitView()" aria-label="Dopasuj widok">
+          <lucide-icon name="maximize-2" [size]="16"></lucide-icon>
+        </button>
+      </div>
+      @if (!loading() && edgeCount() === 0 && nodeCount() > 0) {
+        <div class="mf-cmap-no-edges">
+          Brak połączeń między pojęciami. Ponowne przetworzenie dokumentów może wygenerować relacje.
+        </div>
+      }
+    </div>
 
     @if (selectedNode()) {
       <div class="mf-cmap-panel">

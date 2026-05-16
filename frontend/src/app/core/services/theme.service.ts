@@ -5,9 +5,17 @@ import { DOCUMENT } from '@angular/common';
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
 
+  // Dark mode temporarily disabled — set to true to re-enable
+  private readonly DARK_MODE_ENABLED = false;
+
   isDark = signal(false);
 
   constructor() {
+    if (!this.DARK_MODE_ENABLED) {
+      this.isDark.set(false);
+      this.applyTheme();
+      return;
+    }
     const stored = localStorage.getItem('mf-theme');
     if (stored !== null) {
       this.isDark.set(stored === 'dark');
@@ -20,6 +28,7 @@ export class ThemeService {
   }
 
   toggle(): void {
+    if (!this.DARK_MODE_ENABLED) return;
     this.isDark.update(v => !v);
     this.applyTheme();
   }

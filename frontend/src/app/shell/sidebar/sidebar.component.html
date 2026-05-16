@@ -13,17 +13,22 @@
   </div>
 
   <div class="mf-sidebar-nav">
-    @for (item of navItems(); track item.route) {
-      <a
-        class="mf-nav-item"
-        [class.mf-nav-item-active]="isActive(item.route)"
-        [routerLink]="item.route"
-      >
-        <lucide-icon [name]="item.icon" [size]="18"></lucide-icon>
-        @if (!sidebarCollapsed()) {
-          <span class="mf-nav-label">{{ item.label }}</span>
-        }
-      </a>
+    @for (item of navItems(); track item.route + item.label) {
+      @if (item.isSeparator) {
+        <div class="mf-nav-separator"></div>
+      } @else {
+        <a
+          class="mf-nav-item"
+          [class.mf-nav-item-active]="isActive(item.route)"
+          [class.mf-nav-item-back]="item.isBack"
+          [routerLink]="item.route"
+        >
+          <lucide-icon [name]="item.icon" [size]="18"></lucide-icon>
+          @if (!sidebarCollapsed()) {
+            <span class="mf-nav-label">{{ item.label }}</span>
+          }
+        </a>
+      }
     }
   </div>
 

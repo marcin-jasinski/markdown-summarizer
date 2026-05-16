@@ -71,6 +71,23 @@
 
 .mf-nav-label { overflow: hidden; text-overflow: ellipsis; }
 
+.mf-nav-item-back {
+  color: var(--mf-text-tertiary);
+  font-weight: 600;
+  font-size: 13px;
+
+  &:hover {
+    color: var(--mf-primary);
+    background: var(--mf-primary-subtle);
+  }
+}
+
+.mf-nav-separator {
+  height: 1px;
+  background: var(--mf-border);
+  margin: 6px 4px;
+}
+
 .mf-sidebar-footer {
   padding: 12px;
   border-top: 1px solid var(--mf-border);

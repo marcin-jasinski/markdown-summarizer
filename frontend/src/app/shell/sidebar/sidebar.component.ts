@@ -20,6 +20,7 @@ import {
   ChevronsRight,
   LayoutDashboard,
   Library,
+  ArrowLeft,
 } from 'lucide-angular';
 
 import { ApiService } from '../../core/services/api.service';
@@ -34,7 +35,7 @@ import type { UserStatsResponse } from '../../core/models/api.models';
     LucideAngularModule,
   ],
   providers: [
-    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ChevronsLeft, ChevronsRight, LayoutDashboard, Library }) },
+    { provide: LUCIDE_ICONS, multi: true, useValue: new LucideIconProvider({ ChevronsLeft, ChevronsRight, LayoutDashboard, Library, ArrowLeft }) },
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss',
@@ -53,22 +54,22 @@ export class SidebarComponent implements OnInit {
   statsLoading = signal(true);
 
   readonly navItems = computed(() => {
-    const base = [
-      { label: 'Pulpit', icon: 'layout-dashboard', route: '/' },
-      { label: 'Bazy wiedzy', icon: 'library', route: '/knowledge-bases' },
-    ];
-
     const kbId = this.currentKbId();
+
     if (!kbId) {
-      return base;
+      return [
+        { label: 'Pulpit', icon: 'layout-dashboard', route: '/', isBack: false, isSeparator: false },
+        { label: 'Bazy wiedzy', icon: 'library', route: '/knowledge-bases', isBack: false, isSeparator: false },
+      ];
     }
 
     return [
-      ...base,
-      { label: 'Dokumenty', icon: 'library', route: `/kb/${kbId}/documents` },
-      { label: 'Concept map', icon: 'library', route: `/kb/${kbId}/concepts` },
-      { label: 'Quiz', icon: 'library', route: `/kb/${kbId}/quiz` },
-      { label: 'Flashcards', icon: 'library', route: `/kb/${kbId}/flashcards` },
+      { label: 'Powrót', icon: 'arrow-left', route: '/knowledge-bases', isBack: true, isSeparator: false },
+      { label: '', icon: '', route: '', isBack: false, isSeparator: true },
+      { label: 'Dokumenty', icon: 'library', route: `/kb/${kbId}/documents`, isBack: false, isSeparator: false },
+      { label: 'Concept map', icon: 'library', route: `/kb/${kbId}/concepts`, isBack: false, isSeparator: false },
+      { label: 'Quiz', icon: 'library', route: `/kb/${kbId}/quiz`, isBack: false, isSeparator: false },
+      { label: 'Flashcards', icon: 'library', route: `/kb/${kbId}/flashcards`, isBack: false, isSeparator: false },
     ];
   });
 
