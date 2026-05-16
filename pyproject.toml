@@ -1,0 +1,96 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["mindforge"]
+
+[project]
+name = "mindforge"
+version = "2.0.0"
+description = "AI-powered knowledge graph and study tool"
+requires-python = ">=3.12"
+dependencies = [
+    # Web framework
+    "fastapi>=0.135.0",
+    "uvicorn[standard]>=0.44.0",
+    # Database
+    "sqlalchemy[asyncio]>=2.0.49",
+    "asyncpg>=0.31.0",
+    "alembic>=1.18.0",
+    # AI
+    "litellm>=1.83.0",
+    # Graph
+    "neo4j>=6.1.0",
+    # Cache
+    "redis[hiredis]>=7.4.0",
+    # HTTP
+    "httpx>=0.28.1",
+    # Config / validation
+    "pydantic>=2.12.0",
+    "pydantic-settings>=2.13.0",
+    "email-validator>=2.2.0",
+    # Document parsing
+    "python-frontmatter>=1.1.0",
+    "pymupdf>=1.25.0",
+    "python-docx>=1.2.0",
+    # Observability
+    "langfuse>=4.2.0",
+    # Chat platforms
+    "discord.py>=2.4.0",
+    "slack-bolt[async]>=1.28.0",
+    # Auth
+    "bcrypt>=4.2.0",
+    "pyjwt[crypto]>=2.10.0",
+    # Object storage
+    "minio>=7.2.0",
+    # Utilities
+    "python-multipart>=0.0.26",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.0",
+    "pytest-asyncio>=1.3.0",
+    "httpx>=0.28.1",
+    "testcontainers>=4.14.0",
+    "ruff>=0.15.0",
+    "mypy>=1.20.0",
+]
+
+[project.scripts]
+mindforge-pipeline = "mindforge.cli.pipeline_runner:main"
+mindforge-quiz     = "mindforge.cli.quiz_runner:main"
+mindforge-backfill = "mindforge.cli.backfill:main"
+mindforge-discord  = "mindforge.discord.bot:main"
+mindforge-slack    = "mindforge.slack.app:main"
+mindforge-api      = "mindforge.api.main:run"
+
+# ── Tool configuration ──────────────────────────────────────────────────────
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "integration: marks tests that require a live database (deselect with -m 'not integration')",
+    "e2e: marks end-to-end tests requiring the full stack",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "S", "B", "A", "C4", "PT", "RUF"]
+ignore = [
+    "S101",  # Use of assert (needed in tests)
+]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true

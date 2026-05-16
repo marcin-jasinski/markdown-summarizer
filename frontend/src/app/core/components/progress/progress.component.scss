@@ -1,0 +1,36 @@
+:host { display: block; }
+
+.mf-progress-track {
+  position: relative;
+  height: 6px;
+  border-radius: var(--mf-radius-full);
+  background: var(--mf-surface-3);
+  overflow: hidden;
+}
+
+.mf-progress-fill {
+  height: 100%;
+  border-radius: var(--mf-radius-full);
+  transition: width var(--mf-transition-normal);
+  background: var(--mf-primary);
+}
+
+:host.mf-progress-success .mf-progress-fill { background: var(--mf-correct); }
+:host.mf-progress-danger .mf-progress-fill { background: var(--mf-incorrect); }
+
+.mf-progress-sweep {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  border-radius: var(--mf-radius-full);
+  background: var(--mf-primary);
+  animation: mf-progress-sweep 1.4s ease-in-out infinite;
+}
+
+:host.mf-progress-success .mf-progress-sweep { background: var(--mf-correct); }
+:host.mf-progress-danger .mf-progress-sweep { background: var(--mf-incorrect); }
+
+@keyframes mf-progress-sweep {
+  0% { left: -50%; }
+  100% { left: 100%; }
+}

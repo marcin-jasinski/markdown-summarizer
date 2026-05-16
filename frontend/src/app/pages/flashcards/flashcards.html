@@ -1,0 +1,79 @@
+<div class="mf-flash-page">
+  @if (loading()) {
+    <div class="mf-flash-loading">
+      <div class="mf-flash-skeleton"></div>
+    </div>
+  }
+
+  @if (!loading() && errorMessage()) {
+    <div class="mf-flash-done">
+      <div class="mf-flash-done-icon">⚠️</div>
+      <h2 class="mf-flash-done-title">Błąd ładowania fiszek</h2>
+      <p class="mf-flash-done-text">{{ errorMessage() }}</p>
+      <button class="mf-btn-primary" (click)="loadDueCards()">Spróbuj ponownie</button>
+    </div>
+  }
+
+  @if (!loading() && !errorMessage() && done() && cards().length === 0) {
+    <div class="mf-flash-done">
+      <div class="mf-flash-done-icon">🎉</div>
+      <h2 class="mf-flash-done-title">Wszystko gotowe!</h2>
+      <p class="mf-flash-done-text">Brak kart do powtórki w tej chwili.</p>
+      <button class="mf-btn-primary" (click)="loadDueCards()">Odśwież</button>
+    </div>
+  }
+
+  @if (!loading() && done() && cards().length > 0) {
+    <div class="mf-flash-done">
+      <div class="mf-flash-done-icon">✅</div>
+      <h2 class="mf-flash-done-title">Sesja zakończona!</h2>
+      <p class="mf-flash-done-text">Powtórzyłeś wszystkie {{ cards().length }} karty.</p>
+      <button class="mf-btn-primary" (click)="loadDueCards()">Nowa sesja</button>
+    </div>
+  }
+
+  @if (!loading() && !done() && currentCard()) {
+    <!-- Progress -->
+    <div class="mf-flash-header">
+      <span class="mf-flash-progress-text"
+        >Karta {{ currentIndex() + 1 }} / {{ cards().length }}</span
+      >
+      <div class="mf-flash-progress-bar">
+        <div class="mf-flash-progress-fill" [style.width.%]="progressPct()"></div>
+      </div>
+    </div>
+
+    <!-- Flip card -->
+    <div class="flashcard-scene" (click)="flip()">
+      <div class="flashcard-inner" [class.flipped]="flipped()">
+        <!-- Front -->
+        <div class="flashcard-face flashcard-front">
+          <div class="card-label">Pytanie</div>
+          <p class="card-text">{{ currentCard()!.front }}</p>
+          <div class="flip-hint">Kliknij, aby zobaczyć odpowiedź</div>
+        </div>
+
+        <!-- Back -->
+        <div class="flashcard-face flashcard-back">
+          <div class="card-label">Odpowiedź</div>
+          <p class="card-text">{{ currentCard()!.back }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating buttons (only shown after flip) -->
+    @if (flipped()) {
+      <div class="mf-rating-row">
+        <p class="mf-rating-prompt">Jak dobrze znałeś tę odpowiedź?</p>
+        <div class="mf-rating-buttons">
+          <button class="mf-rate-btn mf-rate-again" (click)="rate(0)">Znowu</button>
+          <button class="mf-rate-btn mf-rate-hard" (click)="rate(2)">Trudna</button>
+          <button class="mf-rate-btn mf-rate-good" (click)="rate(3)">Dobra</button>
+          <button class="mf-rate-btn mf-rate-easy" (click)="rate(5)">Łatwa</button>
+        </div>
+      </div>
+    } @else {
+      <p class="mf-flip-cta">Kliknij kartę, aby zobaczyć odpowiedź</p>
+    }
+  }
+</div>

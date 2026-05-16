@@ -1,0 +1,53 @@
+<div class="mf-search-page">
+  <div class="mf-search-header">
+    <h1 class="mf-search-title">Wyszukiwarka</h1>
+  </div>
+
+  <div class="mf-search-bar">
+    <input
+      class="mf-search-input"
+      [value]="query()"
+      (input)="query.set($any($event.target).value)"
+      placeholder="Szukaj w bazie wiedzy..."
+      (keydown.enter)="search()"
+    />
+    <button class="mf-btn-primary" (click)="search()">Szukaj</button>
+  </div>
+
+  @if (activeFilters().length > 0) {
+    <div class="mf-filter-chips">
+      @for (filter of activeFilters(); track filter) {
+        <div class="mf-removable-chip">
+          {{ filter }}
+          <button class="mf-chip-remove" (click)="removeFilter(filter)">×</button>
+        </div>
+      }
+    </div>
+  }
+
+  @if (isLoading()) {
+    <div class="mf-search-results">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="mf-result-skeleton"></div>
+      }
+    </div>
+  } @else if (results().length > 0) {
+    <div class="mf-search-results">
+      @for (result of results(); track $index) {
+        <div class="mf-result-card">
+          @if (result.source_lesson_id) {
+            <span class="mf-result-chip">{{ result.source_lesson_id }}</span>
+          }
+          <p class="mf-result-text" [innerHTML]="result.content"></p>
+          @if (result.score !== undefined) {
+            <span class="mf-result-score">{{ (result.score * 100).toFixed(0) }}%</span>
+          }
+        </div>
+      }
+    </div>
+  } @else if (hasSearched()) {
+    <div class="mf-search-empty">
+      <p>Brak wyników dla "{{ query() }}"</p>
+    </div>
+  }
+</div>

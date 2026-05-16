@@ -1,0 +1,42 @@
+.search-page {
+  max-width: 860px;
+}
+
+.search-bar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 24px;
+
+  .search-field { flex: 1; }
+
+  button {
+    height: 56px;
+    min-width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.no-results {
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 32px;
+}
+
+.results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-card {
+  border-radius: 12px;
+}
+
+.result-content {
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}

@@ -1,0 +1,161 @@
+@import "tailwindcss";
+@import "./app/core/styles/design-tokens.css";
+
+@theme {
+  --color-primary: var(--mf-primary);
+  --color-surface-1: var(--mf-surface-1);
+  --color-surface-2: var(--mf-surface-2);
+  --color-surface-3: var(--mf-surface-3);
+  --color-text: var(--mf-text-primary);
+  --color-text-secondary: var(--mf-text-secondary);
+  --color-border: var(--mf-border);
+  --color-correct: var(--mf-correct);
+  --color-incorrect: var(--mf-incorrect);
+  --shadow-card: var(--mf-shadow-md);
+  --shadow-card-hover: var(--mf-shadow-card-hover);
+  --radius-sm: var(--mf-radius-sm);
+  --radius-md: var(--mf-radius-md);
+  --radius-lg: var(--mf-radius-lg);
+  --radius-xl: var(--mf-radius-xl);
+}
+
+body {
+  font-family: 'Inter Variable', 'Inter', sans-serif;
+}
+
+
+// MindForge 2.0 — Dark-first design
+
+html {
+  height: 100%;
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--mf-surface-1);
+  color: var(--mf-text-primary);
+  margin: 0;
+  height: 100%;
+}
+
+// ---- Layout utilities -------------------------------------------------------
+
+.page-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    flex: 1;
+  }
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.flex-spacer { flex: 1; }
+
+// ---- Status badges ----------------------------------------------------------
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.status-pending    { background: rgba(255, 193,  7, .18); color: #ffc107; }
+  &.status-processing { background: rgba( 33, 150,243, .18); color: #64b5f6; }
+  &.status-done       { background: rgba( 76, 175, 80, .18); color: #81c784; }
+  &.status-failed     { background: rgba(244,  67, 54, .18); color: #e57373; }
+}
+
+// ---- Scrollbar --------------------------------------------------------------
+
+::-webkit-scrollbar              { width: 8px; height: 8px; }
+::-webkit-scrollbar-track        { background: var(--mf-surface-2); }
+::-webkit-scrollbar-thumb        { background: var(--mf-border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: var(--mf-text-secondary); }
+
+// ---- Flashcard flip ---------------------------------------------------------
+
+.flashcard-scene {
+  perspective: 1000px;
+  width: 100%;
+
+  .flashcard-inner {
+    position: relative;
+    min-height: 220px;
+    transition: transform 0.55s cubic-bezier(.4,0,.2,1);
+    transform-style: preserve-3d;
+
+    &.flipped { transform: rotateY(180deg); }
+  }
+
+  .flashcard-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .flashcard-back {
+    transform: rotateY(180deg);
+    background: var(--mf-surface-3);
+    color: var(--mf-text-primary);
+  }
+}
+
+// ---- Chat bubbles -----------------------------------------------------------
+
+.chat-bubble {
+  max-width: 75%;
+  padding: 12px 16px;
+  border-radius: 18px;
+  line-height: 1.5;
+  word-break: break-word;
+
+  &.user   { background: var(--mf-primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+  &.assistant { background: var(--mf-surface-3); align-self: flex-start; border-bottom-left-radius: 4px; }
+}
+
+// ---- Toast notifications ----------------------------------------------------
+
+.mf-toast {
+  padding: 12px 16px;
+  border-radius: var(--mf-radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  box-shadow: var(--mf-shadow-md);
+  animation: mf-toast-in 200ms ease;
+}
+.mf-toast-success { background: var(--mf-correct); }
+.mf-toast-error   { background: var(--mf-incorrect); }
+.mf-toast-info    { background: var(--mf-primary); }
+@keyframes mf-toast-in {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}

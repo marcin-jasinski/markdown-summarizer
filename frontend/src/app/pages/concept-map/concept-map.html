@@ -1,0 +1,59 @@
+<div class="mf-cmap-page">
+  <div class="mf-cmap-header">
+    <h1 class="mf-cmap-title">Mapa Pojęć</h1>
+    @if (kbName()) {
+      <span class="mf-cmap-kb-badge">{{ kbName() }}</span>
+    }
+  </div>
+
+  <div class="mf-cmap-layout">
+    <div class="mf-cmap-graph" #graphContainer>
+      <div class="mf-cmap-controls">
+        <button class="mf-cmap-ctrl-btn" (click)="zoomIn()" aria-label="Przybliż">
+          <lucide-icon name="zoom-in" [size]="16"></lucide-icon>
+        </button>
+        <button class="mf-cmap-ctrl-btn" (click)="zoomOut()" aria-label="Oddal">
+          <lucide-icon name="zoom-out" [size]="16"></lucide-icon>
+        </button>
+        <button class="mf-cmap-ctrl-btn" (click)="fitView()" aria-label="Dopasuj widok">
+          <lucide-icon name="maximize-2" [size]="16"></lucide-icon>
+        </button>
+      </div>
+      @if (!loading() && edgeCount() === 0 && nodeCount() > 0) {
+        <div class="mf-cmap-no-edges">
+          Brak połączeń między pojęciami. Ponowne przetworzenie dokumentów może wygenerować relacje.
+        </div>
+      }
+    </div>
+
+    @if (selectedNode()) {
+      <div class="mf-cmap-panel">
+        <div class="mf-cmap-panel-header">
+          <h3 class="mf-cmap-panel-title">{{ selectedNode()?.label }}</h3>
+          <button class="mf-cmap-close" (click)="selectedNode.set(null)" aria-label="Zamknij">
+            ×
+          </button>
+        </div>
+        <div class="mf-cmap-panel-body">
+          @if (selectedNode()?.description) {
+            <p class="mf-cmap-panel-desc">{{ selectedNode()?.description }}</p>
+          }
+          @if (selectedNode()?.lesson_id) {
+            <span class="mf-cmap-chip">{{ selectedNode()?.lesson_id }}</span>
+          }
+          @if (nodeRelations().length > 0) {
+            <div class="mf-cmap-relations">
+              <h4 class="mf-cmap-relations-title">Powiązania</h4>
+              @for (rel of nodeRelations(); track rel.id) {
+                <div class="mf-cmap-relation">
+                  <span class="mf-cmap-rel-type">{{ rel.type }}</span>
+                  <span class="mf-cmap-rel-target">{{ rel.target }}</span>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

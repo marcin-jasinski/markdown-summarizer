@@ -1,0 +1,59 @@
+task:
+  id: "2026-04-23-docker-and-deployment"
+  description: "Implement Phase 13 - Docker and Deployment"
+  created_at: "2026-04-23"
+  status: "completed"
+  completed: null
+
+orchestrator:
+  current_phase: 14
+  completed_phases: [1, 2, 5, 6, 7, 8, 10, 11]
+  failed_phases: []
+  options:
+    spec_audit_enabled: true
+    skip_test_suite: false
+    e2e_enabled: false
+    user_docs_enabled: false
+    compose_profiles: true
+    bot_profile: "bots"
+    minio_init: "mc-init-container"
+    code_review_enabled: true
+    pragmatic_review_enabled: true
+    reality_check_enabled: true
+    production_check_enabled: true
+  task_context:
+    risk_level: low-medium
+    clarifications_resolved: null
+    scope_expanded: null
+    architecture_decision: null
+    tech_clarified: null
+    task_characteristics:
+      has_reproducible_defect: false
+      modifies_existing_code: false
+      creates_new_entities: true
+      involves_data_operations: true
+      ui_heavy: false  # user override: infrastructure task, no UI components
+    research_reference:
+      path: null
+      research_question: null
+      research_type: null
+      confidence_level: null
+    phase_summaries:
+      research: {summary: null, key_findings: [], recommended_approach: null}
+      codebase_analysis: {key_files: [], primary_language: null, summary: null}
+      clarifications: []
+      gap_analysis:
+        integration_points:
+          - "Dockerfile (multi-stage: node:20-alpine builder + python:3.12-slim runner)"
+          - "compose.yml (core profile: api, quiz-agent, postgres, neo4j, redis, minio, mc-init; observability profile: langfuse, clickhouse, langfuse-db; bots profile: discord-bot, slack-bot)"
+          - ".dockerignore"
+          - "scripts/STARTUP_GUIDE.md"
+        summary: "Greenfield Docker impl. 2 key decisions: compose profiles (core+observability+bots) and MinIO init container. SPA path alignment and startup ordering are primary risks."
+      scope_clarifications: {scope_expanded: null, summary: null}
+      ui_mockups: {components_designed: [], summary: null}
+      specification: {summary: "Package MindForge 2.0 as a single multi-stage Docker image. compose.yml with 3 profiles: core (api+workers+infra), observability (Langfuse stack), bots (Discord+Slack stubs). 10 requirements, 4 new files."}
+      architecture_decision: {decision: null, summary: null}
+      implementation: {summary: "6 files created/modified: Dockerfile (multi-stage node+python), .dockerignore, compose.yml (3 profiles), scripts/STARTUP_GUIDE.md, tests/unit/test_startup_guide_coverage.py, tests/unit/test_deployment_config.py. env.example updated with observability vars. 30/30 tests passing."}
+  verification_context:
+    fixes_applied: []
+    reverify_count: 0

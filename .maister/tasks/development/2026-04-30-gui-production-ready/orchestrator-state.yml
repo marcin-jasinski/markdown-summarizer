@@ -1,0 +1,31 @@
+workflow: development
+task_description: |
+  GUI production readiness pass. Three concrete bugs reported:
+    1. Concept map renders unusably — circles too small for label text, no edges visible.
+       User open to swapping the visualization library.
+    2. Flashcards feature appears non-functional in the UI.
+    3. Quizzes are generated/displayed in English even when the knowledge-base language is Polish.
+  Investigate root cause for each, fix, and bring the GUI to a polished, demo-ready state.
+created: 2026-04-30
+task_path: .maister/tasks/development/2026-04-30-gui-production-ready
+classification:
+  task_type: development
+  confidence: 92
+completed_phases: []
+failed_phases: []
+task_context:
+  risk_level: null
+  task_characteristics: {}
+  clarifications_resolved: false
+  scope_expanded: false
+  tech_clarified: false
+  architecture_decision: null
+options:
+  e2e_enabled: null
+  user_docs_enabled: null
+  spec_audit_enabled: null
+  code_review_enabled: null
+  pragmatic_review_enabled: null
+  reality_check_enabled: null
+  production_check_enabled: null
+phase_summaries: {}

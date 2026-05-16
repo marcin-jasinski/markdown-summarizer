@@ -1,0 +1,17 @@
+<div class="mf-shell">
+  <app-toolbar
+    [sidebarCollapsed]="sidebarCollapsed()"
+    [userDisplayName]="userName()"
+    (sidebarToggle)="onSidebarToggle()"
+  ></app-toolbar>
+  <div class="mf-shell-body">
+    <app-sidebar
+      [isMobile]="isMobile()"
+      [currentKbId]="currentKbId()"
+      (toggle)="onSidebarToggle()"
+    ></app-sidebar>
+    <main class="mf-shell-main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

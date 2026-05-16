@@ -1,0 +1,92 @@
+.mf-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--mf-toolbar-height);
+  padding: 0 16px;
+  background: var(--mf-surface-1);
+  border-bottom: 1px solid var(--mf-border);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  flex-shrink: 0;
+}
+
+.mf-toolbar-left, .mf-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mf-toolbar-brand {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--mf-primary);
+  letter-spacing: -0.02em;
+}
+
+.mf-toolbar-menu-btn, .mf-toolbar-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  border-radius: var(--mf-radius-md);
+  color: var(--mf-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--mf-transition-fast), color var(--mf-transition-fast);
+  &:hover { background: var(--mf-surface-3); color: var(--mf-text-primary); }
+}
+
+.mf-toolbar-user-wrapper { position: relative; }
+
+.mf-toolbar-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--mf-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mf-toolbar-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  min-width: 160px;
+  background: var(--mf-surface-1);
+  border: 1px solid var(--mf-border);
+  border-radius: var(--mf-radius-md);
+  box-shadow: var(--mf-shadow-md);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.mf-dropdown-name {
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mf-text-primary);
+  border-bottom: 1px solid var(--mf-border);
+}
+
+.mf-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--mf-text-secondary);
+  cursor: pointer;
+  &:hover { background: var(--mf-surface-2); color: var(--mf-text-primary); }
+}

@@ -1,0 +1,66 @@
+<div class="mf-quiz-page">
+  @if (quizState() === 'idle') {
+    <div class="mf-quiz-idle">
+      <div class="mf-quiz-idle-icon">🧠</div>
+      <h2 class="mf-quiz-idle-title">Gotowy na Quiz?</h2>
+      <p class="mf-quiz-idle-text">
+        Sprawdź swoją wiedzę z {{ lessonLabel() || 'tej bazy wiedzy' }}
+      </p>
+      <button class="mf-btn-primary" (click)="startQuiz()">Rozpocznij Quiz</button>
+    </div>
+  }
+
+  @if (quizState() === 'loading') {
+    <div class="mf-quiz-loading">
+      <div class="mf-quiz-skeleton"></div>
+    </div>
+  }
+
+  @if (quizState() === 'question') {
+    <div class="mf-quiz-card">
+      @if (currentQuestion()?.lesson_id) {
+        <span class="mf-chip-label">{{ currentQuestion()!.lesson_id }}</span>
+      }
+      <p class="mf-quiz-question">{{ currentQuestion()?.question_text }}</p>
+      <div class="mf-quiz-answer-wrap">
+        <label class="mf-form-label">Twoja odpowiedź</label>
+        <textarea
+          class="mf-quiz-textarea"
+          [value]="answer()"
+          (input)="answer.set($any($event.target).value)"
+          placeholder="Wpisz swoją odpowiedź..."
+          rows="5"
+        ></textarea>
+      </div>
+      <div class="mf-quiz-actions">
+        <button class="mf-btn-primary" [disabled]="!answer().trim()" (click)="submitAnswer()">
+          Sprawdź
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (quizState() === 'evaluated') {
+    <div class="mf-quiz-card">
+      <div class="mf-quiz-result">
+        <span class="mf-score-badge" [class]="getScoreClass(currentResult()?.score)">
+          {{ currentResult()?.score }}/5
+        </span>
+        <p class="mf-quiz-feedback">{{ currentResult()?.feedback }}</p>
+      </div>
+      <div class="mf-quiz-actions">
+        <button class="mf-btn-primary" (click)="nextQuestion()">Następne pytanie</button>
+        <button class="mf-btn-ghost" (click)="endQuiz()">Zakończ</button>
+      </div>
+    </div>
+  }
+
+  @if (quizState() === 'finished') {
+    <div class="mf-quiz-idle">
+      <div class="mf-quiz-idle-icon">🎉</div>
+      <h2 class="mf-quiz-idle-title">Quiz zakończony!</h2>
+      <p class="mf-quiz-idle-text">Świetna robota! Kontynuuj naukę.</p>
+      <button class="mf-btn-primary" routerLink="/knowledge-bases">Wróć do Baz Wiedzy</button>
+    </div>
+  }
+</div>
