@@ -1314,16 +1314,18 @@ routing, auth integration, and all user-facing pages.
 
 ---
 
-## [ ] Phase 13 — Docker and Deployment
+## [x] Phase 13 — Docker and Deployment
 
 **Goal:** Complete Docker multi-stage build, Docker Compose orchestration,
 and deployment documentation.
 
 ### Completion Checklist
 
-- [ ] `docker build` creates multi-stage image.
-- [ ] `docker compose up` starts all services.
-- [ ] All health checks passing.
+- [x] `docker build` creates multi-stage image.
+- [x] `docker compose up` starts all services.
+- [x] All health checks passing.
+
+> **Completed:** 2026-04-23
 
 ---
 
@@ -1333,11 +1335,11 @@ and deployment documentation.
 search, upload handlers, identity resolution, and workspace security.
 
 > **Implementation note:** The Slack bot shares ~95% of its logic with the
-> Discord bot (Phase 13): the same `IdentityResolver`, application services,
+> Discord bot: the same `IdentityResolver`, application services,
 > auth enforcement patterns, and interaction flows.  Only the Bolt-specific
 > adapter layer (slash commands, interactive messages, Socket Mode transport)
-> is new.  Expect implementation effort to be 20–30% of Phase 13, not
-> comparable in scope.
+> is new.  Expect implementation effort to be 20–30% of the Discord bot phase,
+> not comparable in scope.
 
 ### Tasks
 

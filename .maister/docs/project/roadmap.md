@@ -5,7 +5,7 @@
 ## Current State
 
 - **Version**: 2.0.0 (active development)
-- **Completed Phases (0–12)**: All core features implemented
+- **Completed Phases (0–13)**: All core features + Docker deployment implemented
   - Domain layer, infrastructure foundation, AI gateway
   - Document parsing & ingestion pipeline (Markdown, PDF, DOCX, TXT)
   - 9 AI agents: summarizer, flashcard generator, quiz generator/evaluator,
@@ -15,23 +15,21 @@
   - Angular 21 SPA with Angular Material + Cytoscape.js concept map visualization
   - Quiz engine with server-authoritative state, Redis session support
   - Conversational RAG chat, full-text + semantic search
-- **Remaining Phases (13–19)**: Bot integrations, deployment, hardening
+  - Multi-stage Dockerfile, Docker Compose with 3 profiles (core, observability, bots)
+- **Remaining Phases (14–19)**: Bot integrations, observability, hardening, E2E testing
 
 ## Planned Enhancements
 
-### High Priority — Phases 13–17
+### High Priority — Phases 14–17
 
-- [ ] **Phase 13 — Discord Bot** — Complete Discord integration with slash commands for quiz,
+- [ ] **Phase 14 — Discord Bot** — Complete Discord integration with slash commands for quiz,
   document Q&A, and concept map queries. Enforce guild/channel allowlists. `[Effort: M]`
-- [ ] **Phase 14 — Slack Bot** — Async Slack-Bolt handler for document upload and quiz flows,
+- [ ] **Phase 15 — Slack Bot** — Async Slack-Bolt handler for document upload and quiz flows,
   with interaction ownership enforcement. `[Effort: M]`
-- [ ] **Phase 15 — CLI Entry Points** — Finalize `mindforge-pipeline`, `mindforge-quiz`,
+- [ ] **Phase 16 — CLI Entry Points** — Finalize `mindforge-pipeline`, `mindforge-quiz`,
   `mindforge-backfill`, and `mindforge-discord/slack` CLI commands. `[Effort: S]`
-- [ ] **Phase 16 — Observability & Tracing** — Full Langfuse dashboard coverage, per-operation
+- [ ] **Phase 17 — Observability & Tracing** — Full Langfuse dashboard coverage, per-operation
   token/cost accounting, alerting thresholds for LLM cost anomalies. `[Effort: S]`
-- [ ] **Phase 17 — Docker & Deployment** — Multi-stage Dockerfile (Node → Python), Docker Compose
-  profiles for all services (API, Discord bot, Slack bot, Neo4j, Redis, Postgres, Langfuse stack).
-  Commit missing `Dockerfile` and `compose.yml`. `[Effort: M]`
 
 ### Medium Priority — Quality Gates (Phases 18–19)
 
@@ -61,6 +59,6 @@
 - **Spaced repetition**: Add SM-2 / FSRS scheduling to the quiz/flashcard engine
 
 ---
-*Last Updated*: 2026-04-22
+*Last Updated*: 2026-05-16
 *Effort Scale*: `S` 2–3 days | `M` 1 week | `L` 2+ weeks
 *Reference*: [implementation-plan.md](../../../.github/docs/implementation-plan.md)

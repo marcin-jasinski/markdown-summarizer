@@ -1,0 +1,23 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - img [ref=e7]
+    - heading "MindForge" [level=1] [ref=e10]
+    - paragraph [ref=e11]: Twoja inteligentna baza wiedzy z quizami i kartotekami
+  - generic [ref=e13]:
+    - heading "Zaloguj się" [level=2] [ref=e14]
+    - link "Zaloguj przez Discord" [ref=e15] [cursor=pointer]:
+      - /url: /api/auth/login/discord
+      - img [ref=e16]
+      - text: Zaloguj przez Discord
+    - generic [ref=e19]: lub
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e22]: Email
+        - textbox "twoj@email.pl" [ref=e23]
+      - generic [ref=e24]:
+        - generic [ref=e25]: Hasło
+        - textbox "••••••••" [ref=e26]
+      - button "Zaloguj się" [ref=e27] [cursor=pointer]
+    - generic [ref=e28]:
+      - text: Nie masz konta?
+      - button "Utwórz konto" [ref=e29] [cursor=pointer]

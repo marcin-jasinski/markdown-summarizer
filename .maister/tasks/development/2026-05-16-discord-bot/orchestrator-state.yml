@@ -1,0 +1,91 @@
+orchestrator:
+  started_phase: "phase-1-codebase-analysis"
+  completed_phases:
+    - phase-1-codebase-analysis
+    - phase-2-gap-analysis
+    - phase-5-specification
+    - phase-6-spec-audit
+    - phase-7-implementation-planning
+  failed_phases: []
+
+  auto_fix_attempts:
+    phase-1: 0
+    phase-2: 0
+    phase-5: 0
+    phase-7: 0
+    phase-8: 0
+
+  options:
+    e2e_enabled: null
+    user_docs_enabled: null
+    code_review_enabled: null
+
+  created: "2026-05-16T00:00:00Z"
+  updated: "2026-05-16T00:00:00Z"
+  task_path: ".maister/tasks/development/2026-05-16-discord-bot"
+
+  task_ids:
+    phase-1: null
+    phase-2: null
+    phase-5: null
+    phase-6: null
+    phase-7: null
+    phase-8: null
+    phase-10: null
+    phase-11: null
+    phase-14: null
+
+task:
+  title: "Implement Phase 14 — Discord Bot"
+  description: >
+    Implement the Discord bot (Phase 14 per implementation plan). The bot must:
+    - Provide slash commands: /quiz start, /quiz answer, /search, /upload
+    - Enforce guild/channel allowlists via mindforge/discord/auth.py
+    - Resolve Discord users to internal UUIDs via IdentityResolver (provider='discord')
+    - Delegate all business logic to application services (QuizService, SearchService, IngestionService)
+    - Wire composition root in mindforge/discord/bot.py
+    - Implement per-user SR reminders via DM (notifications cog)
+    - Write unit tests: identity resolution, allowlist enforcement, interaction ownership
+    - Ensure mindforge-discord entry point is callable
+  status: "in_progress"
+  tags:
+    - "discord"
+    - "bot"
+    - "phase-14"
+  priority: "high"
+
+task_context:
+  risk_level: low-medium
+  clarifications_resolved: true
+  tech_clarified: false
+  architecture_decision: null
+  scope_expanded: false
+  task_characteristics:
+    has_reproducible_defect: false
+    modifies_existing_code: true
+    creates_new_entities: true
+    involves_data_operations: false
+    ui_heavy: false
+
+  scope_decisions:
+    kb_resolution: "interactive_dropdown"
+    quiz_session_state: "redis_backed"
+    sr_enumeration: "extend_port"
+
+  phase_summaries:
+    codebase_analysis: >-
+      Discord bot is a complete stub; all application services, IdentityResolver,
+      UploadSource.DISCORD, config fields, and discord.py dependency are already in place —
+      implementation is purely additive within mindforge/discord/.
+    gap_analysis: >-
+      Purely additive: bot.py composition root, auth.py allowlist guard, 4 cogs
+      (quiz/search/upload/notifications), minor ExternalIdentityRepository extension for
+      SR user enumeration, and unit tests. Decisions: KB picker=dropdown, quiz sessions=Redis,
+      SR enumeration=extend port.
+    specification: >-
+      Specification complete: 12 core requirements covering composition root, guild allowlist,
+      identity resolution, 4 slash commands (/quiz start, /quiz answer, /search, /upload), SR
+      reminder DM task, list_by_provider port extension, i18n messages, and 27 unit tests.
+      Output: implementation/spec.md
+    implementation: null
+    verification: null
